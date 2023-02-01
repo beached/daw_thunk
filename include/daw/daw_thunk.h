@@ -55,6 +55,10 @@ namespace daw {
 
 	template<typename Result>
 	struct Thunk<Result( )> {
+		static_assert(
+		  std::is_trivially_copyable_v<Result> or std::is_reference_v<Result>,
+		  "Only trivially copyable types are currently supported. Passing by "
+		  "reference or pointer may help" );
 		using thunk_t = thunk_impl::thunk;
 		using uptr_thunk_t =
 		  std::unique_ptr<thunk_t, thunk_impl::mmap_deleter<sizeof( thunk_t )>>;
