@@ -1,8 +1,8 @@
 cmake_minimum_required( VERSION 3.16 )
-project( daw-thunk-a-dunk
+project( daw-thunk
          VERSION "0.1.0"
 				 DESCRIPTION "Cross platform thunking abstraction"
-         HOMEPAGE_URL "https://github.com/beached/thunk_a_dunk"
+         HOMEPAGE_URL "https://github.com/beached/thunk"
          LANGUAGES C CXX
          )
 
