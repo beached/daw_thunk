@@ -40,6 +40,8 @@ namespace daw {
 			unsigned char mov_rax[2] = { 0x48, 0xB8 };
 			void *function_pointer = nullptr;
 			unsigned char jmp_rax[2] = { 0xFF, 0xE0 };
+
+			constexpr void set( void *state_ptr, void *func_ptr ) {}
 		};
 		/***
 		 * mov rsi, rdi
@@ -244,5 +246,7 @@ namespace daw {
 			return reinterpret_cast<thunked_fp_t>( thunk.get( ) );
 		}
 	};
+	template<typename R, typename... Params>
+	Thunk( void *, R ( * )( void *, Params... ) ) -> Thunk<R( Params... )>;
 
 } // namespace daw

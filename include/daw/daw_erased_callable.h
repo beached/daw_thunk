@@ -8,12 +8,13 @@
 
 #pragma once
 
-#include <memory>
-#include <type_traits>
+#include "daw_function_traits.h"
 
 #include <daw/daw_traits.h>
 
 #include <cassert>
+#include <memory>
+#include <type_traits>
 
 namespace daw {
 
@@ -47,4 +48,23 @@ namespace daw {
 		                          std::nullptr_t> = nullptr>
 		erased_callable( Func && ) = delete;
 	};
+
+	namespace erased_callable_impl {
+		template<typename FT, std::size_t... Is>
+		auto make_erased_callable_fn( std::index_sequence<Is...> )
+		  -> erased_callable<
+		    typename FT::result_t( typename FT::template argument<Is>::type... )>;
+
+		template<typename FT>
+		using make_erased_callable_t = decltype( make_erased_callable_fn<FT>(
+		  std::make_index_sequence<FT::arity>{ } ) );
+	} // namespace erased_callable_impl
+
+	template<typename Func>
+	constexpr auto make_erased_callable( Func &f )
+	  -> erased_callable_impl::make_erased_callable_t<
+	    daw::func::function_traits<Func>> {
+		return { f };
+	}
+
 } // namespace daw

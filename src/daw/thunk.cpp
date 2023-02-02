@@ -13,14 +13,14 @@
 #include <vector>
 
 int main( ) {
-	int x = 1;//3.14159;
+	int x = 1; // 3.14159;
 	using T = long long;
 	auto lambda = [&x]( T d1, T d2, T d3, T d4, T d5 ) -> void {
 		x += d1 + d2 + d3 + d4 + d5;
 	};
-	auto fp = daw::erased_callable<void( T, T, T, T, T )>{ lambda };
+	auto fp = daw::make_erased_callable( lambda );
 	// fp.fp( fp.data, 1 );
-	auto th = daw::Thunk<void( T, T, T, T, T )>( fp.data, fp.fp );
+	auto th = daw::Thunk( fp.data, fp.fp );
 	assert( th.thunk );
 	auto th_fp = th.get( );
 	std::cout << x << '\n';
