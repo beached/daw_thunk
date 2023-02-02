@@ -67,3 +67,5 @@ jmp rax
 ```
 
 The program uses a newly acquired page of memory via mmap so that we can ensure that it does not much about with other pages. After writing the addresses into it, it is marked as `PROT_EXEC` and no longer writable.
+
+A function pointer to this region is created via reinterpret_cast, and that is what one uses or passes to the callback.
