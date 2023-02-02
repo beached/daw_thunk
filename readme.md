@@ -44,7 +44,7 @@ th_fp( );
 
 ### How it works
 
-The important part is the `thunk` structure. When it is interpreted as bytes, it matches machine code instructions that the compilers/assemblers generate. JIT'ing systems use similar techniques. At a high level, what the code does is insert an extra parameter as the first argument. This often works well because many systems treat the parametrs, even if using registers, as a stack. We are pushing a new parameter onto the callstack.
+The important part is the `thunk` structure. When it is interpreted as bytes, it matches machine code instructions that the compilers/assemblers generate. JIT'ing systems use similar techniques. At a high level, what the code does is insert an extra parameter as the first argument. This often works well because many systems treat the parameters, even if using registers, as a stack. We are pushing a new parameter onto the callstack.
 
 For example. We have a callback that takes a function pointer with the signature `void(*)( )`. This does not allow for the caller to supply state(this is common in capturing lambda's in C++), `erased_callable` helps with creating a `void * state` and a function pointer like `void(*)( void * )`. We need to call this, but the system will only call a `void(*)( )`. So we use a structure like
 
