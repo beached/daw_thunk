@@ -23,8 +23,8 @@ set( SOURCE_FILES
 
 add_executable( ${PROJECT_NAME} ${SOURCE_FILES} )
 target_compile_features( ${PROJECT_NAME} INTERFACE cxx_std_17 )
-#target_compile_options( ${PROJECT_NAME} PRIVATE -fsanitize=undefined )
-#target_link_options( ${PROJECT_NAME} PRIVATE -fsanitize=undefined )
+target_compile_options( ${PROJECT_NAME} PRIVATE -fsanitize=undefined )
+target_link_options( ${PROJECT_NAME} PRIVATE -fsanitize=undefined )
 target_include_directories( ${PROJECT_NAME} PRIVATE ${LLVM_INCLUDE_DIRS} )
 target_link_libraries( ${PROJECT_NAME} PRIVATE
                        daw::daw-header-libraries

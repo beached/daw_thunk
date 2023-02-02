@@ -24,14 +24,39 @@ namespace daw {
 	namespace thunk_impl {
 
 #if defined( __x86_64__ )
-		struct __attribute__( ( packed ) ) thunk {
-			unsigned char mov[2] = { 0x48, 0xBF };
+		template<std::size_t /*PassedParams*/>
+		struct thunk;
+
+		/***
+		 * mov rdi, [state]
+		 * mov rax, [function_ptr]
+		 * jmp rax
+		 */
+		template<>
+		struct __attribute__( ( packed ) ) thunk<0> {
+			unsigned char mov_rdi[2] = { 0x48, 0xBF };
 			void *state = nullptr;
-			unsigned char movrax[2] = { 0x48, 0xB8 };
+			unsigned char mov_rax[2] = { 0x48, 0xB8 };
 			void *function_pointer = nullptr;
-			unsigned char jmp[2] = { 0xFF, 0xE0 };
+			unsigned char jmp_rax[2] = { 0xFF, 0xE0 };
+		};
+		/***
+		 * mov rsi, rdi
+		 * mov rdi, [state]
+		 * mov rax, [function_ptr]
+		 * jmp rax
+		 */
+		template<>
+		struct __attribute__( ( packed ) ) thunk<1> {
+			unsigned char mov_rsi_rdi[3] = { 0x48, 0x89, 0xFE };
+			unsigned char mov_rdi[2] = { 0x48, 0xBF };
+			void *state = nullptr;
+			unsigned char mov_rax[2] = { 0x48, 0xB8 };
+			void *function_pointer = nullptr;
+			unsigned char jmp_rax[2] = { 0xFF, 0xE0 };
 		};
 #elif defined( __i386__ )
+		template<std::size_t /*PassedParams*/>
 		struct __attribute__( ( packed ) ) thunk {
 			unsigned char push = unsigned char{ 0x68 };
 			void *state = nullptr;
@@ -43,7 +68,8 @@ namespace daw {
 #else
 #error Architecture unsupported
 #endif
-		inline constexpr thunk default_thunk{ };
+		template<std::size_t PassedParams>
+		inline constexpr thunk<PassedParams> default_thunk{ };
 
 		template<std::size_t Len>
 		struct mmap_deleter {
@@ -61,27 +87,37 @@ namespace daw {
 	template<typename>
 	struct Thunk;
 
-	template<typename Result>
-	struct Thunk<Result( )> {
+	template<typename T>
+	inline constexpr bool can_passthrough_thunk_v =
+	  std::is_same_v<void, T> or std::is_trivially_copyable_v<T> or
+	  std::is_reference_v<T>;
+
+	template<typename Result, typename... Params>
+	struct Thunk<Result( Params... )> {
 		static_assert(
-		  std::is_same_v<void, Result> or std::is_trivially_copyable_v<Result> or
-		    std::is_reference_v<Result>,
+		  can_passthrough_thunk_v<Result>,
 		  "Only trivially copyable types are currently supported. Passing by "
 		  "reference or pointer may help" );
-		using thunk_t = thunk_impl::thunk;
+		static_assert(
+		  ( can_passthrough_thunk_v<Params> and ... ),
+		  "Only trivially copyable types are currently supported. Passing by "
+		  "reference or pointer may help" );
+		using thunk_t = thunk_impl::thunk<sizeof...( Params )>;
 		using uptr_thunk_t =
 		  std::unique_ptr<thunk_t, thunk_impl::mmap_deleter<sizeof( thunk_t )>>;
 		uptr_thunk_t thunk = nullptr;
 
 		Thunk( ) = default;
-		DAW_ATTRIB_NOINLINE Thunk( void *data, Result ( *code )( void * ) ) {
+		DAW_ATTRIB_NOINLINE Thunk( void *data,
+		                           Result ( *code )( void *, Params... ) ) {
 			void *tmp = ::mmap( 0, sizeof( thunk_t ), PROT_WRITE,
 			                    MAP_PRIVATE | MAP_ANONYMOUS, -1, 0 );
 			if( tmp == MAP_FAILED ) {
 				do_error( "Error mapping region" );
 			}
 			thunk = uptr_thunk_t( reinterpret_cast<thunk_t *>(
-			  memcpy( tmp, &thunk_impl::default_thunk, sizeof( thunk_t ) ) ) );
+			  memcpy( tmp, &thunk_impl::default_thunk<sizeof...( Params )>,
+			          sizeof( thunk_t ) ) ) );
 #if defined( __x86_64__ )
 			thunk->state = data;
 			thunk->function_pointer = reinterpret_cast<void *>( code );
@@ -95,7 +131,7 @@ namespace daw {
 			}
 		}
 
-		using thunked_fp_t = Result ( * )( );
+		using thunked_fp_t = daw::traits::make_fp<Result( Params... )>;
 		thunked_fp_t get( ) const {
 			return reinterpret_cast<thunked_fp_t>( thunk.get( ) );
 		}

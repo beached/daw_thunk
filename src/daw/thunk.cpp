@@ -13,18 +13,18 @@
 #include <vector>
 
 int main( ) {
-	int x = 0;
-	auto lambda = [&x]( ) -> void {
-		++x;
+	double x = 3.14159;
+	auto lambda = [&x]( int i ) -> void {
+		x += i;
 	};
-	auto fp = daw::erased_callable<void( )>{ lambda };
-	// fp.fp( fp.data );
-	auto th = daw::Thunk<void( )>( fp.data, fp.fp );
+	auto fp = daw::erased_callable<void( int )>{ lambda };
+	//fp.fp( fp.data, 1 );
+	auto th = daw::Thunk<void( int )>( fp.data, fp.fp );
 	assert( th.thunk );
 	auto th_fp = th.get( );
 	std::cout << x << '\n';
-	th_fp( );
+	th_fp( 1 );
 	std::cout << x << '\n';
-	th_fp( );
+	th_fp( 2 );
 	std::cout << x << '\n';
 }
