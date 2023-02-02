@@ -16,6 +16,20 @@ The second parts takes a function pointer and a data pointer. It generates a thu
 
 ### Example usage
 
+To quickly get started and if your lambda/callable class only has one overload, the return type/parameters can be deduced.  This allows for a quick construction like below.
+
+```cpp
+int x = 0;
+auto lamba = [&x] {
+    ++x;
+};
+auto th = daw::Thunk( daw::make_erased_callable( lambda ) );
+th( );
+th( );
+assert( x == 2 );
+```
+
+Or one can break it down into several steps.
 ```cpp
 int x = 0;
 auto lambda = [&x]( ) -> void {
@@ -39,8 +53,11 @@ auto th_fp = th.get( );
 Call the callback
 
 ```c++
+th( );
+// or
 th_fp( );
 ```
+The Thunk object has a conversion to the function pointer get( ) returns.
 
 ### How it works
 
