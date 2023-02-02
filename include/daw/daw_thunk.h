@@ -13,6 +13,7 @@
 #include <cstring>
 #include <memory>
 #include <stdexcept>
+#include <string_view>
 #include <sys/mman.h>
 #include <type_traits>
 
