@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include "daw_erased_callable.h"
+
 #include <daw/daw_attributes.h>
 
 #include <cstring>
@@ -241,6 +243,9 @@ namespace daw {
 			}
 		}
 
+		Thunk( erased_callable<Result( Params... )> const &ec )
+		  : Thunk( ec.data, ec.fp ) {}
+
 		using thunked_fp_t = daw::traits::make_fp<Result( Params... )>;
 		thunked_fp_t get( ) const {
 			return reinterpret_cast<thunked_fp_t>( thunk.get( ) );
@@ -248,5 +253,8 @@ namespace daw {
 	};
 	template<typename R, typename... Params>
 	Thunk( void *, R ( * )( void *, Params... ) ) -> Thunk<R( Params... )>;
+
+	template<typename R, typename... Params>
+	Thunk( erased_callable<R( Params... )> ) -> Thunk<R( Params... )>;
 
 } // namespace daw

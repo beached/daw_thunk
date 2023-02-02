@@ -10,7 +10,6 @@
 #include "daw/daw_thunk.h"
 
 #include <iostream>
-#include <vector>
 
 int main( ) {
 	int x = 1; // 3.14159;
@@ -18,9 +17,7 @@ int main( ) {
 	auto lambda = [&x]( T d1, T d2, T d3, T d4, T d5 ) -> void {
 		x += d1 + d2 + d3 + d4 + d5;
 	};
-	auto fp = daw::make_erased_callable( lambda );
-	// fp.fp( fp.data, 1 );
-	auto th = daw::Thunk( fp.data, fp.fp );
+	auto th = daw::Thunk( daw::make_erased_callable( lambda ) );
 	assert( th.thunk );
 	auto th_fp = th.get( );
 	std::cout << x << '\n';

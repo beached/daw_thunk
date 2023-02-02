@@ -38,7 +38,7 @@ namespace daw {
 	public:
 		template<typename Func, std::enable_if_t<std::is_lvalue_reference_v<Func>,
 		                                         std::nullptr_t> = nullptr>
-		erased_callable( Func &&func ) noexcept
+		explicit erased_callable( Func &&func ) noexcept
 		  : data( static_cast<void *>(
 		      const_cast<daw::remove_cvref_t<Func> *>( std::addressof( func ) ) ) )
 		  , fp( invoke_callable<Func> ) {}
@@ -61,10 +61,9 @@ namespace daw {
 	} // namespace erased_callable_impl
 
 	template<typename Func>
-	constexpr auto make_erased_callable( Func &f )
-	  -> erased_callable_impl::make_erased_callable_t<
-	    daw::func::function_traits<Func>> {
-		return { f };
+	constexpr auto make_erased_callable( Func &f ) {
+		return erased_callable_impl::make_erased_callable_t<
+		  daw::func::function_traits<Func>>{ f };
 	}
 
 } // namespace daw
