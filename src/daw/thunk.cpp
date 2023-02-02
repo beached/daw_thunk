@@ -13,19 +13,18 @@
 #include <vector>
 
 int main( ) {
-	auto x = std::vector<double>{ 3.14159 };
-
-	auto lambda = [x]( ) mutable -> std::vector<double> const & {
-		assert( not x.empty( ) );
-		auto next_value = x.back( ) + 1.0;
-		x.push_back( next_value );
-		return x;
+	int x = 0;
+	auto lambda = [&x]( ) -> void {
+		++x;
 	};
-	auto fp = daw::erased_callable<std::vector<double> const &( )>{ lambda };
-	//fp.fp( fp.data );
-	auto th = daw::Thunk<std::vector<double> const &( )>( fp.data, fp.fp );
+	auto fp = daw::erased_callable<void( )>{ lambda };
+	// fp.fp( fp.data );
+	auto th = daw::Thunk<void( )>( fp.data, fp.fp );
 	assert( th.thunk );
 	auto th_fp = th.get( );
-	std::cout << th_fp( ).back( ) << '\n';
-	std::cout << th_fp( ).back( ) << '\n';
+	std::cout << x << '\n';
+	th_fp( );
+	std::cout << x << '\n';
+	th_fp( );
+	std::cout << x << '\n';
 }

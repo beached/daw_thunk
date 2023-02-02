@@ -1,7 +1,7 @@
 cmake_minimum_required( VERSION 3.16 )
 project( daw-thunk
          VERSION "0.1.0"
-				 DESCRIPTION "Cross platform thunking abstraction"
+         DESCRIPTION "Cross platform thunking abstraction"
          HOMEPAGE_URL "https://github.com/beached/thunk"
          LANGUAGES C CXX
          )
@@ -19,10 +19,12 @@ include_directories( "${CMAKE_SOURCE_DIR}/include" )
 
 set( SOURCE_FILES
      src/daw/thunk.cpp
-)
+     )
 
 add_executable( ${PROJECT_NAME} ${SOURCE_FILES} )
 target_compile_features( ${PROJECT_NAME} INTERFACE cxx_std_17 )
+#target_compile_options( ${PROJECT_NAME} PRIVATE -fsanitize=undefined )
+#target_link_options( ${PROJECT_NAME} PRIVATE -fsanitize=undefined )
 target_include_directories( ${PROJECT_NAME} PRIVATE ${LLVM_INCLUDE_DIRS} )
 target_link_libraries( ${PROJECT_NAME} PRIVATE
                        daw::daw-header-libraries
