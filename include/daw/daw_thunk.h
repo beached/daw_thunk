@@ -252,7 +252,7 @@ namespace daw {
 		  : Thunk( erased_callable<Result( Params... )>( f ) ) {}
 
 		using thunked_fp_t = daw::traits::make_fp<Result( Params... )>;
-		thunked_fp_t get( ) const {
+		thunked_fp_t get( ) const & {
 			return reinterpret_cast<thunked_fp_t>( thunk.get( ) );
 		}
 

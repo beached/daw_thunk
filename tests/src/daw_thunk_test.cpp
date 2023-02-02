@@ -12,12 +12,12 @@
 #include <iostream>
 
 int main( ) {
-	int x = 1; // 3.14159;
+	int x = 0; // 3.14159;
 	using T = long long;
-	auto lambda = [&x]( T d1, T d2, T d3, T d4, T d5 ) -> void {
-		x += d1 + d2 + d3 + d4 + d5;
+	auto const lambda = [&x]( T num1, T num2, T num3, T num4, T num5 ) -> void {
+		x += static_cast<int>( num1 + num2 + num3 + num4 + num5 );
 	};
-	auto th = daw::make_thunk( lambda );
+	auto const th = daw::make_thunk( lambda );
 	assert( th.thunk );
 	std::cout << x << '\n';
 	th( 1, 2, 3, 4, 5 );

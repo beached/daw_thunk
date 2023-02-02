@@ -8,25 +8,68 @@ project( daw-thunk
 
 set( CMAKE_CXX_STANDARD 17 CACHE STRING "The C++ standard whose features are requested." )
 
-#include( cmake/test_compiler_options.cmake )
-add_subdirectory( extern )
-
-#set( Boost_NO_WARN_NEW_VERSIONS ON )
-
-#find_package( Boost COMPONENTS system container REQUIRED )
+option(DAW_USE_PACKAGE_MANAGEMENT "Do not use FetchContent and assume dependencies are installed" OFF)
+if (NOT DAW_USE_PACKAGE_MANAGEMENT)
+    add_subdirectory(extern)
+else ()
+    find_package(daw-header-libraries REQUIRED)
+endif ()
 
 include_directories( "${CMAKE_SOURCE_DIR}/include" )
 
-set( SOURCE_FILES
-     src/daw/thunk.cpp
-     )
+include(GNUInstallDirs)
+set(daw_thunk_INSTALL_CMAKEDIR
+    "${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake"
+    CACHE STRING
+    "The install directory to use for CMake package config files"
+    )
 
-add_executable( ${PROJECT_NAME} ${SOURCE_FILES} )
-target_compile_features( ${PROJECT_NAME} INTERFACE cxx_std_17 )
-target_compile_options( ${PROJECT_NAME} PRIVATE -fsanitize=undefined )
-target_link_options( ${PROJECT_NAME} PRIVATE -fsanitize=undefined )
-target_include_directories( ${PROJECT_NAME} PRIVATE ${LLVM_INCLUDE_DIRS} )
-target_link_libraries( ${PROJECT_NAME} PRIVATE
-                       daw::daw-header-libraries
-                       )
+set(PROJECT_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
 
+add_library(${PROJECT_NAME} INTERFACE)
+add_library(daw::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
+target_link_libraries(${PROJECT_NAME} INTERFACE daw::daw-header-libraries )
+
+target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_17)
+target_include_directories(${PROJECT_NAME}
+                           INTERFACE
+                           "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+                           "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
+                           )
+
+install(TARGETS ${PROJECT_NAME}
+        EXPORT ${PROJECT_NAME}_Targets
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+
+include(CMakePackageConfigHelpers)
+
+configure_package_config_file(
+        "${PROJECT_SOURCE_DIR}/cmake/${PROJECT_NAME}Config.cmake.in"
+        "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+        INSTALL_DESTINATION lib/cmake/${PROJECT_NAME}
+)
+
+write_basic_package_version_file("${PROJECT_NAME}ConfigVersion.cmake"
+                                 VERSION ${PROJECT_VERSION}
+                                 COMPATIBILITY SameMajorVersion)
+
+install(EXPORT ${PROJECT_NAME}_Targets
+        FILE ${PROJECT_NAME}Targets.cmake
+        NAMESPACE daw::
+        DESTINATION lib/cmake/${PROJECT_NAME}
+        )
+
+install(FILES "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+        "${PROJECT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
+        DESTINATION lib/cmake/${PROJECT_NAME}
+        )
+
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/daw DESTINATION include)
+
+
+if( DAW_ENABLE_TESTING )
+     enable_testing()
+     add_subdirectory( tests )
+endif()
