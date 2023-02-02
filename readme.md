@@ -1,4 +1,4 @@
-# DAW Thunk 
+# DAW Thunk
 
 By Darrell Wright
 
@@ -65,3 +65,5 @@ mov rdi, [state]
 mov rax, [function_ptr]
 jmp rax
 ```
+
+The program uses a newly acquired page of memory via mmap so that we can ensure that it does not much about with other pages. After writing the addresses into it, it is marked as `PROT_EXEC` and no longer writable.
