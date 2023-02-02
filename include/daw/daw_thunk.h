@@ -55,6 +55,42 @@ namespace daw {
 			void *function_pointer = nullptr;
 			unsigned char jmp_rax[2] = { 0xFF, 0xE0 };
 		};
+		/***
+		 * mov rdx, rsi
+		 * mov rsi, rdi
+		 * mov rdi, [state]
+		 * mov rax, [function_ptr]
+		 * jmp rax
+		 */
+		template<>
+		struct __attribute__( ( packed ) ) thunk<2> {
+			unsigned char mov_rdx_rsi[3] = { 0x48, 0x89, 0xF2 };
+			unsigned char mov_rsi_rdi[3] = { 0x48, 0x89, 0xFE };
+			unsigned char mov_rdi[2] = { 0x48, 0xBF };
+			void *state = nullptr;
+			unsigned char mov_rax[2] = { 0x48, 0xB8 };
+			void *function_pointer = nullptr;
+			unsigned char jmp_rax[2] = { 0xFF, 0xE0 };
+		};
+		/***
+		 * mov rcx,rdx
+		 * mov rdx, rsi
+		 * mov rsi, rdi
+		 * mov rdi, [state]
+		 * mov rax, [function_ptr]
+		 * jmp rax
+		 */
+		template<>
+		struct __attribute__( ( packed ) ) thunk<3> {
+			unsigned char mov_rcx_rdx[3] = { 0x48, 0x89, 0xD1 };
+			unsigned char mov_rdx_rsi[3] = { 0x48, 0x89, 0xF2 };
+			unsigned char mov_rsi_rdi[3] = { 0x48, 0x89, 0xFE };
+			unsigned char mov_rdi[2] = { 0x48, 0xBF };
+			void *state = nullptr;
+			unsigned char mov_rax[2] = { 0x48, 0xB8 };
+			void *function_pointer = nullptr;
+			unsigned char jmp_rax[2] = { 0xFF, 0xE0 };
+		};
 #elif defined( __i386__ )
 		template<std::size_t /*PassedParams*/>
 		struct __attribute__( ( packed ) ) thunk {
