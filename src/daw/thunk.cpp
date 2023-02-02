@@ -19,10 +19,9 @@ int main( ) {
 	};
 	auto th = daw::Thunk( daw::make_erased_callable( lambda ) );
 	assert( th.thunk );
-	auto th_fp = th.get( );
 	std::cout << x << '\n';
-	th_fp( 1, 2, 3, 4, 5 );
+	th( 1, 2, 3, 4, 5 );
 	std::cout << x << '\n';
-	th_fp( 1, 2, 3, 4, 5 );
+	th( 1, 2, 3, 4, 5 );
 	std::cout << x << '\n';
 }

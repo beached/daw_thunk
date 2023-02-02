@@ -221,8 +221,9 @@ namespace daw {
 		uptr_thunk_t thunk = nullptr;
 
 		Thunk( ) = default;
-		DAW_ATTRIB_NOINLINE Thunk( void *data,
-		                           Result ( *code )( void *, Params... ) ) {
+		DAW_ATTRIB_NOINLINE explicit Thunk( void *data,
+		                                    Result ( *code )( void *,
+		                                                      Params... ) ) {
 			void *tmp = ::mmap( 0, sizeof( thunk_t ), PROT_WRITE,
 			                    MAP_PRIVATE | MAP_ANONYMOUS, -1, 0 );
 			if( tmp == MAP_FAILED ) {
@@ -243,12 +244,20 @@ namespace daw {
 			}
 		}
 
-		Thunk( erased_callable<Result( Params... )> const &ec )
+		explicit Thunk( erased_callable<Result( Params... )> const &ec )
 		  : Thunk( ec.data, ec.fp ) {}
+
+		template<typename Func>
+		explicit Thunk( Func &f )
+		  : Thunk( erased_callable<Result( Params... )>( f ) ) {}
 
 		using thunked_fp_t = daw::traits::make_fp<Result( Params... )>;
 		thunked_fp_t get( ) const {
 			return reinterpret_cast<thunked_fp_t>( thunk.get( ) );
+		}
+
+		inline operator thunked_fp_t( ) const & {
+			return get( );
 		}
 	};
 	template<typename R, typename... Params>
@@ -256,5 +265,4 @@ namespace daw {
 
 	template<typename R, typename... Params>
 	Thunk( erased_callable<R( Params... )> ) -> Thunk<R( Params... )>;
-
 } // namespace daw
