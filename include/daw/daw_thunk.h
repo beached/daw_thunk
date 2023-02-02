@@ -73,7 +73,7 @@ namespace daw {
 			unsigned char jmp_rax[2] = { 0xFF, 0xE0 };
 		};
 		/***
-		 * mov rcx,rdx
+		 * mov rcx, rdx
 		 * mov rdx, rsi
 		 * mov rsi, rdi
 		 * mov rdi, [state]
@@ -82,6 +82,75 @@ namespace daw {
 		 */
 		template<>
 		struct __attribute__( ( packed ) ) thunk<3> {
+			unsigned char mov_rcx_rdx[3] = { 0x48, 0x89, 0xD1 };
+			unsigned char mov_rdx_rsi[3] = { 0x48, 0x89, 0xF2 };
+			unsigned char mov_rsi_rdi[3] = { 0x48, 0x89, 0xFE };
+			unsigned char mov_rdi[2] = { 0x48, 0xBF };
+			void *state = nullptr;
+			unsigned char mov_rax[2] = { 0x48, 0xB8 };
+			void *function_pointer = nullptr;
+			unsigned char jmp_rax[2] = { 0xFF, 0xE0 };
+		};
+		/***
+		 * mov r8, rcx
+		 * mov rcx, rdx
+		 * mov rdx, rsi
+		 * mov rsi, rdi
+		 * mov rdi, [state]
+		 * mov rax, [function_ptr]
+		 * jmp rax
+		 */
+		template<>
+		struct __attribute__( ( packed ) ) thunk<4> {
+			unsigned char mov_r8_rcx[3] = { 0x48, 0x89, 0xC8 };
+			unsigned char mov_rcx_rdx[3] = { 0x48, 0x89, 0xD1 };
+			unsigned char mov_rdx_rsi[3] = { 0x48, 0x89, 0xF2 };
+			unsigned char mov_rsi_rdi[3] = { 0x48, 0x89, 0xFE };
+			unsigned char mov_rdi[2] = { 0x48, 0xBF };
+			void *state = nullptr;
+			unsigned char mov_rax[2] = { 0x48, 0xB8 };
+			void *function_pointer = nullptr;
+			unsigned char jmp_rax[2] = { 0xFF, 0xE0 };
+		};
+		/***
+		 * mov r9, r8
+		 * mov r8, rcx
+		 * mov rcx, rdx
+		 * mov rdx, rsi
+		 * mov rsi, rdi
+		 * mov rdi, [state]
+		 * mov rax, [function_ptr]
+		 * jmp rax
+		 */
+		template<>
+		struct __attribute__( ( packed ) ) thunk<5> {
+			unsigned char mov_r9_r8[3] = { 0x4D, 0x89, 0xC1 };
+			unsigned char mov_r8_rcx[3] = { 0x49, 0x89, 0xC8 };
+			unsigned char mov_rcx_rdx[3] = { 0x48, 0x89, 0xD1 };
+			unsigned char mov_rdx_rsi[3] = { 0x48, 0x89, 0xF2 };
+			unsigned char mov_rsi_rdi[3] = { 0x48, 0x89, 0xFE };
+			unsigned char mov_rdi[2] = { 0x48, 0xBF };
+			void *state = nullptr;
+			unsigned char mov_rax[2] = { 0x48, 0xB8 };
+			void *function_pointer = nullptr;
+			unsigned char jmp_rax[2] = { 0xFF, 0xE0 };
+		};
+		/***
+		 * push rax
+		 * mov  rax,r8
+		 * mov  r8,rcx
+		 * mov  rcx,rdx
+		 * mov  rdx,rsi
+		 * mov  rsi,rdi
+		 * mov  rdi, [state]
+		 * mov  rax, [function_ptr]
+		 * jmp  rax
+		 */
+		template<>
+		struct __attribute__( ( packed ) ) thunk<6> {
+			unsigned char push_rax = 0x50;
+			unsigned char mov_rax_r8[3] = { 0x4C, 0x89, 0xC0 };
+			unsigned char mov_r8_rcx[3] = { 0x49, 0x89, 0xC8 };
 			unsigned char mov_rcx_rdx[3] = { 0x48, 0x89, 0xD1 };
 			unsigned char mov_rdx_rsi[3] = { 0x48, 0x89, 0xF2 };
 			unsigned char mov_rsi_rdi[3] = { 0x48, 0x89, 0xFE };
@@ -138,7 +207,10 @@ namespace daw {
 		  ( can_passthrough_thunk_v<Params> and ... ),
 		  "Only trivially copyable types are currently supported. Passing by "
 		  "reference or pointer may help" );
-		using thunk_t = thunk_impl::thunk<sizeof...( Params )>;
+		static constexpr std::size_t param_count =
+		  ( sizeof...( Params ) ) -
+		  ( static_cast<std::size_t>( std::is_floating_point_v<Params> ) + ... );
+		using thunk_t = thunk_impl::thunk<param_count>;
 		using uptr_thunk_t =
 		  std::unique_ptr<thunk_t, thunk_impl::mmap_deleter<sizeof( thunk_t )>>;
 		uptr_thunk_t thunk = nullptr;
@@ -151,9 +223,8 @@ namespace daw {
 			if( tmp == MAP_FAILED ) {
 				do_error( "Error mapping region" );
 			}
-			thunk = uptr_thunk_t( reinterpret_cast<thunk_t *>(
-			  memcpy( tmp, &thunk_impl::default_thunk<sizeof...( Params )>,
-			          sizeof( thunk_t ) ) ) );
+			thunk = uptr_thunk_t( reinterpret_cast<thunk_t *>( memcpy(
+			  tmp, &thunk_impl::default_thunk<param_count>, sizeof( thunk_t ) ) ) );
 #if defined( __x86_64__ )
 			thunk->state = data;
 			thunk->function_pointer = reinterpret_cast<void *>( code );
