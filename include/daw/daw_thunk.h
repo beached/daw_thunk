@@ -260,6 +260,7 @@ namespace daw {
 			return get( );
 		}
 	};
+
 	template<typename R, typename... Params>
 	Thunk( void *, R ( * )( void *, Params... ) ) -> Thunk<R( Params... )>;
 

@@ -19,13 +19,15 @@ The second parts takes a function pointer and a data pointer. It generates a thu
 To quickly get started and if your lambda/callable class only has one overload, the return type/parameters can be deduced.  This allows for a quick construction like below.
 
 ```cpp
+void foo( void(*)( ) );
+
 int x = 0;
 auto lamba = [&x] {
     ++x;
 };
 auto th = daw::make_thunk( lambda ) );
-th( );
-th( );
+foo( th );
+foo( th );
 assert( x == 2 );
 ```
 
