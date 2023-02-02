@@ -17,7 +17,7 @@ int main( ) {
 	auto lambda = [&x]( T d1, T d2, T d3, T d4, T d5 ) -> void {
 		x += d1 + d2 + d3 + d4 + d5;
 	};
-	auto th = daw::Thunk( daw::make_erased_callable( lambda ) );
+	auto th = daw::make_thunk( lambda );
 	assert( th.thunk );
 	std::cout << x << '\n';
 	th( 1, 2, 3, 4, 5 );

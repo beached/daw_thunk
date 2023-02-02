@@ -265,4 +265,9 @@ namespace daw {
 
 	template<typename R, typename... Params>
 	Thunk( erased_callable<R( Params... )> ) -> Thunk<R( Params... )>;
-} // namespace daw
+
+	template<typename Func>
+	auto make_thunk( Func &f ) {
+		return Thunk( make_erased_callable( f ) );
+	}
+}; // namespace daw

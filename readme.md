@@ -23,7 +23,7 @@ int x = 0;
 auto lamba = [&x] {
     ++x;
 };
-auto th = daw::Thunk( daw::make_erased_callable( lambda ) );
+auto th = daw::make_thunk( lambda ) );
 th( );
 th( );
 assert( x == 2 );
