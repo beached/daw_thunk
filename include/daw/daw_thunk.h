@@ -80,14 +80,9 @@ namespace daw {
 			}
 			thunk = uptr_thunk_t( reinterpret_cast<thunk_t *>( memcpy(
 			  tmp, &thunk_impl::default_thunk<param_count>, sizeof( thunk_t ) ) ) );
-#if defined( __x86_64__ )
-			thunk->state = data;
-			thunk->function_pointer = reinterpret_cast<void *>( code );
-#else
-			thunk->state = data;
-			thunk->call_offset =
-			  reinterpret_cast<void *>( code ) - (void *)&thunk->add_esp[0];
-#endif
+
+			thunk_impl::set_thunk_params( thunk, data,
+			                              reinterpret_cast<void *>( code ) );
 			if( mprotect( thunk.get( ), sizeof( thunk_t ), PROT_EXEC ) == -1 ) {
 				do_error( "Error protecting region" );
 			}

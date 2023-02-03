@@ -19,9 +19,9 @@ namespace daw::thunk_impl {
 	struct thunk;
 
 	/***
-		 * mov rdi, [state]
-		 * mov rax, [function_ptr]
-		 * jmp rax
+	 * mov rdi, [state]
+	 * mov rax, [function_ptr]
+	 * jmp rax
 	 */
 	template<>
 	struct __attribute__( ( packed ) ) thunk<0> {
@@ -34,10 +34,10 @@ namespace daw::thunk_impl {
 		constexpr void set( void *state_ptr, void *func_ptr ) {}
 	};
 	/***
-		 * mov rsi, rdi
-		 * mov rdi, [state]
-		 * mov rax, [function_ptr]
-		 * jmp rax
+	 * mov rsi, rdi
+	 * mov rdi, [state]
+	 * mov rax, [function_ptr]
+	 * jmp rax
 	 */
 	template<>
 	struct __attribute__( ( packed ) ) thunk<1> {
@@ -49,11 +49,11 @@ namespace daw::thunk_impl {
 		unsigned char jmp_rax[2] = { 0xFF, 0xE0 };
 	};
 	/***
-		 * mov rdx, rsi
-		 * mov rsi, rdi
-		 * mov rdi, [state]
-		 * mov rax, [function_ptr]
-		 * jmp rax
+	 * mov rdx, rsi
+	 * mov rsi, rdi
+	 * mov rdi, [state]
+	 * mov rax, [function_ptr]
+	 * jmp rax
 	 */
 	template<>
 	struct __attribute__( ( packed ) ) thunk<2> {
@@ -66,12 +66,12 @@ namespace daw::thunk_impl {
 		unsigned char jmp_rax[2] = { 0xFF, 0xE0 };
 	};
 	/***
-		 * mov rcx, rdx
-		 * mov rdx, rsi
-		 * mov rsi, rdi
-		 * mov rdi, [state]
-		 * mov rax, [function_ptr]
-		 * jmp rax
+	 * mov rcx, rdx
+	 * mov rdx, rsi
+	 * mov rsi, rdi
+	 * mov rdi, [state]
+	 * mov rax, [function_ptr]
+	 * jmp rax
 	 */
 	template<>
 	struct __attribute__( ( packed ) ) thunk<3> {
@@ -85,13 +85,13 @@ namespace daw::thunk_impl {
 		unsigned char jmp_rax[2] = { 0xFF, 0xE0 };
 	};
 	/***
-		 * mov r8, rcx
-		 * mov rcx, rdx
-		 * mov rdx, rsi
-		 * mov rsi, rdi
-		 * mov rdi, [state]
-		 * mov rax, [function_ptr]
-		 * jmp rax
+	 * mov r8, rcx
+	 * mov rcx, rdx
+	 * mov rdx, rsi
+	 * mov rsi, rdi
+	 * mov rdi, [state]
+	 * mov rax, [function_ptr]
+	 * jmp rax
 	 */
 	template<>
 	struct __attribute__( ( packed ) ) thunk<4> {
@@ -106,14 +106,14 @@ namespace daw::thunk_impl {
 		unsigned char jmp_rax[2] = { 0xFF, 0xE0 };
 	};
 	/***
-		 * mov r9, r8
-		 * mov r8, rcx
-		 * mov rcx, rdx
-		 * mov rdx, rsi
-		 * mov rsi, rdi
-		 * mov rdi, [state]
-		 * mov rax, [function_ptr]
-		 * jmp rax
+	 * mov r9, r8
+	 * mov r8, rcx
+	 * mov rcx, rdx
+	 * mov rdx, rsi
+	 * mov rsi, rdi
+	 * mov rdi, [state]
+	 * mov rax, [function_ptr]
+	 * jmp rax
 	 */
 	template<>
 	struct __attribute__( ( packed ) ) thunk<5> {
@@ -129,15 +129,15 @@ namespace daw::thunk_impl {
 		unsigned char jmp_rax[2] = { 0xFF, 0xE0 };
 	};
 	/***
-		 * push rax
-		 * mov  rax,r8
-		 * mov  r8,rcx
-		 * mov  rcx,rdx
-		 * mov  rdx,rsi
-		 * mov  rsi,rdi
-		 * mov  rdi, [state]
-		 * mov  rax, [function_ptr]
-		 * jmp  rax
+	 * push rax
+	 * mov  rax,r8
+	 * mov  r8,rcx
+	 * mov  rcx,rdx
+	 * mov  rdx,rsi
+	 * mov  rsi,rdi
+	 * mov  rdi, [state]
+	 * mov  rax, [function_ptr]
+	 * jmp  rax
 	 */
 	template<>
 	struct __attribute__( ( packed ) ) thunk<6> {
@@ -153,4 +153,11 @@ namespace daw::thunk_impl {
 		void *function_pointer = nullptr;
 		unsigned char jmp_rax[2] = { 0xFF, 0xE0 };
 	};
-}
+
+	template<typename Thunk>
+	constexpr void set_thunk_params( Thunk & th, void *state,
+	                                 void *function_pointer ) {
+		th->state = state;
+		th->function_pointer = reinterpret_cast<void *>( function_pointer );
+	}
+} // namespace daw::thunk_impl
