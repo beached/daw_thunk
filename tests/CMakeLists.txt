@@ -34,7 +34,7 @@ target_compile_options( daw_thunk_test_lib INTERFACE $<$<CXX_COMPILER_ID:MSVC>:/
 
 add_executable( daw_thunk src/daw_thunk_test.cpp )
 target_link_libraries( daw_thunk PRIVATE daw_thunk_test_lib )
-add_test( daw_thunk_test COMMAND daw_thunk )
+add_test( NAME daw_thunk_test COMMAND daw_thunk )
 
 add_executable( signal src/signal_test.cpp )
 target_link_libraries( signal PRIVATE daw_thunk_test_lib )
