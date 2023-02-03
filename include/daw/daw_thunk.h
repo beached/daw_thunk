@@ -9,6 +9,7 @@
 #pragma once
 
 #include "daw_erased_callable.h"
+#include "thunk/impl/daw_function_traits.h"
 #include "thunk/impl/thunk_impl.h"
 
 #include <daw/daw_attributes.h>
