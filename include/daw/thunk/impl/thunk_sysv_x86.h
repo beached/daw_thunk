@@ -16,12 +16,12 @@
 namespace daw::thunk_imp {
 	template<std::size_t /*PassedParams*/>
 	struct __attribute__( ( packed ) ) thunk {
-		unsigned char push = unsigned char{ 0x68 };
+		unsigned char push =  0x68;
 		void *state = nullptr;
-		unsigned char call = unsigned char{ 0xE8 };
+		unsigned char call = 0xE8;
 		long call_offset = 0;
 		unsigned char add_esp[3] = { 0x83, 0xC4, 0x04 };
-		unsigned char ret = unsigned char{ 0xC3 };
+		unsigned char ret = 0xC3 ;
 	};
 }
 
