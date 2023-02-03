@@ -72,9 +72,9 @@ namespace daw {
 		uptr_thunk_t thunk = nullptr;
 
 		Thunk( ) = default;
-		DAW_ATTRIB_NOINLINE explicit Thunk( void *data,
-		                                    Result ( *code )( void *,
-		                                                      Params... ) ) {
+		DAW_ATTRIB_NOINLINE explicit Thunk(
+		  void *user_data_pointer,
+		  Result ( *function_pointer )( void *, Params... ) ) {
 			void *tmp = ::mmap( 0, sizeof( thunk_t ), PROT_WRITE,
 			                    MAP_PRIVATE | MAP_ANONYMOUS, -1, 0 );
 			if( tmp == MAP_FAILED ) {
@@ -83,8 +83,9 @@ namespace daw {
 			thunk = uptr_thunk_t( reinterpret_cast<thunk_t *>( memcpy(
 			  tmp, &thunk_impl::default_thunk<param_count>, sizeof( thunk_t ) ) ) );
 
-			thunk_impl::set_thunk_params( thunk, data,
-			                              reinterpret_cast<void *>( code ) );
+			thunk_impl::set_thunk_params(
+			  thunk, reinterpret_cast<std::uintptr_t>( user_data_pointer ),
+			  reinterpret_cast<std::uintptr_t>( function_pointer ) );
 			if( mprotect( thunk.get( ), sizeof( thunk_t ), PROT_EXEC ) == -1 ) {
 				do_error( "Error protecting region" );
 			}

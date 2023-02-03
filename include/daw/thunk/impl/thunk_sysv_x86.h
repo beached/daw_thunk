@@ -12,12 +12,13 @@
 #endif
 
 #include <cstddef>
+#include <cstdint>
 
 namespace daw::thunk_imp {
 	template<std::size_t /*PassedParams*/>
 	struct __attribute__( ( packed ) ) thunk {
 		unsigned char push = 0x68;
-		void *state = nullptr;
+		std::uintptr_t user_data_pointer = 0;
 		unsigned char call = 0xE8;
 		long call_offset = 0;
 		unsigned char add_esp[3] = { 0x83, 0xC4, 0x04 };
@@ -25,10 +26,9 @@ namespace daw::thunk_imp {
 	};
 
 	template<typename Thunk>
-	constexpr void set_thunk_params( Thunk &th, void *state,
-	                                 void *function_pointer ) {
-		th->state = state;
-		th->call_offset = reinterpret_cast<void *>(
-		  reinterpret_cast<char *>( function_pointer ) - &th->add_esp[0] );
+	constexpr void set_thunk_params( Thunk &th, std::uintptr_t user_data_pointer,
+	                                 std::uintptr_t function_pointer ) {
+		th->user_data_pointer = user_data_pointer;
+		th->call_offset = function_pointer - &th->add_esp[0];
 	}
 } // namespace daw::thunk_imp
