@@ -46,19 +46,21 @@ namespace daw {
 	template<typename>
 	struct Thunk;
 
-	template<typename T>
-	inline constexpr bool can_passthrough_thunk_v =
-	  std::is_same_v<void, T> or std::is_trivially_copyable_v<T> or
-	  std::is_reference_v<T>;
+	namespace thunk_impl {
+		template<typename T>
+		inline constexpr bool can_passthrough_thunk_v =
+		  std::is_same_v<void, T> or std::is_trivially_copyable_v<T> or
+		  std::is_reference_v<T>;
+	}
 
 	template<typename Result, typename... Params>
 	struct Thunk<Result( Params... )> {
 		static_assert(
-		  can_passthrough_thunk_v<Result>,
+		  thunk_impl::can_passthrough_thunk_v<Result>,
 		  "Only trivially copyable types are currently supported. Passing by "
 		  "reference or pointer may help" );
 		static_assert(
-		  ( can_passthrough_thunk_v<Params> and ... ),
+		  ( thunk_impl::can_passthrough_thunk_v<Params> and ... ),
 		  "Only trivially copyable types are currently supported. Passing by "
 		  "reference or pointer may help" );
 		static constexpr std::size_t param_count =
