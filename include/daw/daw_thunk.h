@@ -75,6 +75,9 @@ namespace daw {
 		DAW_ATTRIB_NOINLINE explicit Thunk(
 		  void *user_data_pointer,
 		  Result ( *function_pointer )( void *, Params... ) ) {
+			static_assert( sizeof( Result( * )( void *, Params... ) ) ==
+			                 sizeof( void * ),
+			               "Unexpected function pointer size" );
 			void *tmp = ::mmap( 0, sizeof( thunk_t ), PROT_WRITE,
 			                    MAP_PRIVATE | MAP_ANONYMOUS, -1, 0 );
 			if( tmp == MAP_FAILED ) {
