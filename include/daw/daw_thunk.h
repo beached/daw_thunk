@@ -72,6 +72,7 @@ namespace daw {
 		uptr_thunk_t thunk = nullptr;
 
 		Thunk( ) = default;
+
 		DAW_ATTRIB_NOINLINE explicit Thunk(
 		  void *user_data_pointer,
 		  Result ( *function_pointer )( void *, Params... ) ) {
@@ -87,8 +88,8 @@ namespace daw {
 			  tmp, &thunk_impl::default_thunk<param_count>, sizeof( thunk_t ) ) ) );
 
 			thunk_impl::set_thunk_params(
-			  thunk, reinterpret_cast<std::uintptr_t>( user_data_pointer ),
-			  reinterpret_cast<std::uintptr_t>( function_pointer ) );
+			  thunk, user_data_pointer,
+			  reinterpret_cast<void *>( function_pointer ) );
 			if( mprotect( thunk.get( ), sizeof( thunk_t ), PROT_EXEC ) == -1 ) {
 				do_error( "Error protecting region" );
 			}
@@ -97,7 +98,9 @@ namespace daw {
 		explicit Thunk( erased_callable<Result( Params... )> const &ec )
 		  : Thunk( ec.data, ec.fp ) {}
 
-		template<typename Func>
+		template<typename Func,
+		         std::enable_if_t<std::is_invocable_v<Func, Params...>,
+		                          std::nullptr_t> = nullptr>
 		explicit Thunk( Func &f )
 		  : Thunk( erased_callable<Result( Params... )>( f ) ) {}
 
