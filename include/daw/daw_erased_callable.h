@@ -21,9 +21,9 @@ namespace daw {
 	template<typename>
 	struct erased_callable;
 
-	/// \brief Construct a type erased callable suitable to pass to api's with a function pointer/void * state first param
-	/// \tparam Result The result type of the function
-	/// \tparam Params The parameter types of the function
+	/// \brief Construct a type erased callable suitable to pass to api's with a
+	/// function pointer/void * state first param \tparam Result The result type
+	/// of the function \tparam Params The parameter types of the function
 	template<typename Result, typename... Params>
 	struct erased_callable<Result( Params... )> {
 		using function_t = daw::traits::make_fp<Result( void *, Params... )>;
@@ -63,10 +63,10 @@ namespace daw {
 		  std::make_index_sequence<FT::arity>{ } ) );
 	} // namespace erased_callable_impl
 
-	/// \brief A function to help make erased_callable types by deducing the result type and parameter types from the func provided
-	/// \tparam Func class type of the function
-	/// \param f function object
-	/// \return A erased_callable with the appropriate Result and Params... types
+	/// \brief A function to help make erased_callable types by deducing the
+	/// result type and parameter types from the func provided \tparam Func class
+	/// type of the function \param f function object \return A erased_callable
+	/// with the appropriate Result and Params... types
 	template<typename Func>
 	constexpr auto make_erased_callable( Func &f ) {
 		return erased_callable_impl::make_erased_callable_t<

@@ -64,8 +64,7 @@ namespace daw {
 		  "Only trivially copyable types are currently supported. Passing by "
 		  "reference or pointer may help" );
 		static constexpr std::size_t param_count =
-		  ( sizeof...( Params ) ) -
-		  ( static_cast<std::size_t>( std::is_floating_point_v<Params> ) + ... );
+		  thunk_impl::calculate_size_v<Result, Params...>;
 		using thunk_t = thunk_impl::thunk<param_count>;
 		using uptr_thunk_t =
 		  std::unique_ptr<thunk_t, thunk_impl::mmap_deleter<sizeof( thunk_t )>>;
