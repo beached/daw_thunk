@@ -18,8 +18,10 @@
 #include <memory>
 #include <stdexcept>
 #include <string_view>
-#include <sys/mman.h>
 #include <type_traits>
+#define WIN32_LEAN_AND_MEAN      // Exclude rarely-used stuff from Windows headers
+#include <windows.h>
+
 
 namespace daw {
 	[[noreturn]] DAW_ATTRIB_INLINE void do_error( std::string_view /*sv*/ ) {
@@ -31,13 +33,12 @@ namespace daw {
 		inline constexpr thunk<PassedParams> default_thunk{ };
 
 		template<std::size_t Len>
-		struct virtual_alloc_deleter {
-			virtual_alloc_deleter( ) = default;
+		struct mmap_deleter {
+			mmap_deleter( ) = default;
 
 			inline void operator( )( void *ptr ) const {
-				if( munmap( ptr, Len ) == -1 ) {
-
-					do_error( "Error unmapping region, check errno" );
+				if( ::VirtualFree( ptr, 0, MEM_RELEASE ) == 0 ) {
+					do_error( "Error unmapping region, check GetLastError" );
 				}
 			}
 		};
@@ -67,7 +68,7 @@ namespace daw {
 		  thunk_impl::calculate_size_v<Result, Params...>;
 		using thunk_t = thunk_impl::thunk<param_count>;
 		using uptr_thunk_t =
-		  std::unique_ptr<thunk_t, thunk_impl::virtual_alloc_deleter<sizeof( thunk_t )>>;
+		  std::unique_ptr<thunk_t, thunk_impl::mmap_deleter<sizeof( thunk_t )>>;
 		uptr_thunk_t thunk = nullptr;
 
 		Thunk( ) = default;
@@ -78,10 +79,10 @@ namespace daw {
 			static_assert( sizeof( Result( * )( void *, Params... ) ) ==
 			                 sizeof( void * ),
 			               "Unexpected function pointer size" );
-			void *tmp = ::mmap( 0, sizeof( thunk_t ), PROT_WRITE,
-			                    MAP_PRIVATE | MAP_ANONYMOUS, -1, 0 );
-			if( tmp == MAP_FAILED ) {
-				do_error( "Error mapping region" );
+			void *tmp = ::VirtualAlloc( nullptr, sizeof( thunk_t ),
+			                            MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE );
+			if( not tmp ) {
+				do_error( "Error mapping region, check GetLastError" );
 			}
 			thunk = uptr_thunk_t( reinterpret_cast<thunk_t *>( memcpy(
 			  tmp, &thunk_impl::default_thunk<param_count>, sizeof( thunk_t ) ) ) );
@@ -89,8 +90,10 @@ namespace daw {
 			thunk_impl::set_thunk_params(
 			  thunk, user_data_pointer,
 			  reinterpret_cast<void *>( function_pointer ) );
-			if( mprotect( thunk.get( ), sizeof( thunk_t ), PROT_EXEC ) == -1 ) {
-				do_error( "Error protecting region" );
+			auto old_protection = DWORD( );
+			if( ::VirtualProtect( thunk.get( ), sizeof( thunk_t ), PAGE_EXECUTE_READ,
+			                      &old_protection ) == 0 ) {
+				do_error( "Error protecting region, check GetLastError" );
 			}
 		}
 

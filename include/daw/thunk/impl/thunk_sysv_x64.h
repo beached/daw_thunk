@@ -30,8 +30,6 @@ namespace daw::thunk_impl {
 		unsigned char movabs_rax[2] = { 0x48, 0xB8 };
 		void *function_pointer = nullptr;
 		unsigned char jmp_rax[2] = { 0xFF, 0xE0 };
-
-		constexpr void set( void *user_data_pointer_ptr, void *func_ptr ) {}
 	};
 	/***
 	 * mov rsi, rdi

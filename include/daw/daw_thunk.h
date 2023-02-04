@@ -10,4 +10,6 @@
 
 #if defined( __GNUC__ )
 #include "thunk/daw_thunk_sysv.h"
+#elif defined( _WIN32 )
+#include "thunk/daw_thunk_win.h"
 #endif
