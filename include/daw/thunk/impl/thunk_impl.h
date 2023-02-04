@@ -8,7 +8,11 @@
 
 #pragma once
 
-#if defined( __GNUC__ )
+#if defined( _WIN64 ) and not defined( __MINGW64__ )
+#include "thunk_win_x64.h"
+#elif defined( _WIN32 ) and not defined( __MINGW32__ )
+#include "thunk_win_x86.h"
+#elif defined( __GNUC__ )
 #if defined( __x86_64__ )
 #include "thunk_sysv_x64.h"
 #elif not defined( __i386__ )
@@ -16,10 +20,4 @@
 #else
 #error Architecture unsupported
 #endif
-#elif defined( _WIN64 )
-#include "thunk_win_x64.h"
-#elif defined( _WIN32 )
-#include "thunk_win_x86.h"
-#else
-#error Architecture unsupported
 #endif

@@ -305,6 +305,6 @@ namespace daw::thunk_impl {
 
 	template<typename, typename... Ts>
 	inline constexpr std::size_t calculate_size_v =
-	  ( calc_param_size_v<Ts> + ... );
+	  ( calc_param_size_v<Ts> + ... + 0 );
 
 } // namespace daw::thunk_impl
