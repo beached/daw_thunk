@@ -26,9 +26,9 @@ namespace daw::thunk_impl {
 	template<>
 	struct __attribute__( ( packed ) ) thunk<0> {
 		unsigned char movabs_rdi[2] = { 0x48, 0xBF };
-		void *user_data_pointer = 0;
+		void *user_data_pointer = nullptr;
 		unsigned char movabs_rax[2] = { 0x48, 0xB8 };
-		void *function_pointer = 0;
+		void *function_pointer = nullptr;
 		unsigned char jmp_rax[2] = { 0xFF, 0xE0 };
 
 		constexpr void set( void *user_data_pointer_ptr, void *func_ptr ) {}
@@ -43,9 +43,9 @@ namespace daw::thunk_impl {
 	struct __attribute__( ( packed ) ) thunk<1> {
 		unsigned char mov_rsi_rdi[3] = { 0x48, 0x89, 0xFE };
 		unsigned char movabs_rdi[2] = { 0x48, 0xBF };
-		void *user_data_pointer = 0;
+		void *user_data_pointer = nullptr;
 		unsigned char movabs_rax[2] = { 0x48, 0xB8 };
-		void *function_pointer = 0;
+		void *function_pointer = nullptr;
 		unsigned char jmp_rax[2] = { 0xFF, 0xE0 };
 	};
 	/***
@@ -60,9 +60,9 @@ namespace daw::thunk_impl {
 		unsigned char mov_rdx_rsi[3] = { 0x48, 0x89, 0xF2 };
 		unsigned char mov_rsi_rdi[3] = { 0x48, 0x89, 0xFE };
 		unsigned char movabs_rdi[2] = { 0x48, 0xBF };
-		void *user_data_pointer = 0;
+		void *user_data_pointer = nullptr;
 		unsigned char movabs_rax[2] = { 0x48, 0xB8 };
-		void *function_pointer = 0;
+		void *function_pointer = nullptr;
 		unsigned char jmp_rax[2] = { 0xFF, 0xE0 };
 	};
 	/***
@@ -79,9 +79,9 @@ namespace daw::thunk_impl {
 		unsigned char mov_rdx_rsi[3] = { 0x48, 0x89, 0xF2 };
 		unsigned char mov_rsi_rdi[3] = { 0x48, 0x89, 0xFE };
 		unsigned char movabs_rdi[2] = { 0x48, 0xBF };
-		void *user_data_pointer = 0;
+		void *user_data_pointer = nullptr;
 		unsigned char movabs_rax[2] = { 0x48, 0xB8 };
-		void *function_pointer = 0;
+		void *function_pointer = nullptr;
 		unsigned char jmp_rax[2] = { 0xFF, 0xE0 };
 	};
 	/***
@@ -100,9 +100,9 @@ namespace daw::thunk_impl {
 		unsigned char mov_rdx_rsi[3] = { 0x48, 0x89, 0xF2 };
 		unsigned char mov_rsi_rdi[3] = { 0x48, 0x89, 0xFE };
 		unsigned char movabs_rdi[2] = { 0x48, 0xBF };
-		void *user_data_pointer = 0;
+		void *user_data_pointer = nullptr;
 		unsigned char movabs_rax[2] = { 0x48, 0xB8 };
-		void *function_pointer = 0;
+		void *function_pointer = nullptr;
 		unsigned char jmp_rax[2] = { 0xFF, 0xE0 };
 	};
 	/***
@@ -123,9 +123,9 @@ namespace daw::thunk_impl {
 		unsigned char mov_rdx_rsi[3] = { 0x48, 0x89, 0xF2 };
 		unsigned char mov_rsi_rdi[3] = { 0x48, 0x89, 0xFE };
 		unsigned char movabs_rdi[2] = { 0x48, 0xBF };
-		void *user_data_pointer = 0;
+		void *user_data_pointer = nullptr;
 		unsigned char movabs_rax[2] = { 0x48, 0xB8 };
-		void *function_pointer = 0;
+		void *function_pointer = nullptr;
 		unsigned char jmp_rax[2] = { 0xFF, 0xE0 };
 	};
 	/***
@@ -153,9 +153,9 @@ namespace daw::thunk_impl {
 		unsigned char mov_rsi_rdi[3] = { 0x48, 0x89, 0xFE };
 		unsigned char mov_qword_ptr_rsp_r9[4] = { 0x4C, 0x89, 0x0C, 0x24 };
 		unsigned char movabs_rdi[2] = { 0x48, 0xBF };
-		void *user_data_pointer = 0;
+		void *user_data_pointer = nullptr;
 		unsigned char movabs_r10[2] = { 0x49, 0xBA };
-		void *function_pointer = 0;
+		void *function_pointer = nullptr;
 		unsigned char mov_r9_rax[3] = { 0x49, 0x89, 0xC1 };
 		unsigned char call_r10[3] = { 0x41, 0xFF, 0xD2 };
 		unsigned char pop_rcx = 0x59;
@@ -188,9 +188,9 @@ namespace daw::thunk_impl {
 		unsigned char mov_rdx_rsi[3] = { 0x48, 0x89, 0xF2 };
 		unsigned char mov_rsi_rdi[3] = { 0x48, 0x89, 0xFE };
 		unsigned char movabs_rdi[2] = { 0x48, 0xBF };
-		void *user_data_pointer = 0;
+		void *user_data_pointer = nullptr;
 		unsigned char movabs_r10[2] = { 0x49, 0xBA };
-		void *function_pointer = 0;
+		void *function_pointer = nullptr;
 		unsigned char push_qword_ptr_rsp_plus_0x10[4] = { 0xFF, 0x74, 0x24, 0x10 };
 		unsigned char push_rax_2 = 0x50;
 		unsigned char call_r10[3] = { 0x41, 0xFF, 0xD2 };
@@ -232,9 +232,9 @@ namespace daw::thunk_impl {
 
 		unsigned char mov_qword_ptr_rsp_r9[4] = { 0x4C, 0x89, 0x0C, 0x24 };
 		unsigned char movabs_rdi[2] = { 0x48, 0xBF };
-		void *user_data_pointer = 0;
+		void *user_data_pointer = nullptr;
 		unsigned char movabs_r10[2] = { 0x49, 0xBA };
-		void *function_pointer = 0;
+		void *function_pointer = nullptr;
 		unsigned char mov_r9_rax[3] = { 0x49, 0x89, 0xC1 };
 		unsigned char call_r10[3] = { 0x41, 0xFF, 0xD2 };
 
@@ -280,9 +280,9 @@ namespace daw::thunk_impl {
 		                                              0x08 };
 		unsigned char mov_rsp_r9[4] = { 0x4C, 0x89, 0x0C, 0x24 };
 		unsigned char movabs_rdi[2] = { 0x48, 0xBF };
-		void *user_data_pointer = 0;
+		void *user_data_pointer = nullptr;
 		unsigned char movabs_r10[2] = { 0x49, 0xBA };
-		void *function_pointer = 0;
+		void *function_pointer = nullptr;
 		unsigned char mov_r9_rax[3] = { 0x49, 0x89, 0xC1 };
 		unsigned char call_r10[3] = { 0x41, 0xFF, 0xD2 };
 
