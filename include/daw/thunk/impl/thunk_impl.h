@@ -18,6 +18,8 @@
 #endif
 #elif defined( _WIN64 )
 #include "thunk_win_x64.h"
+#elif defined( _WIN32 )
+#include "thunk_win_x86.h"
 #else
 #error Architecture unsupported
 #endif

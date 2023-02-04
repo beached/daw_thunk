@@ -25,7 +25,7 @@ namespace daw::thunk_impl {
 	 */
 	template<>
 	struct __attribute__( ( packed ) ) thunk<0> {
-		unsigned char movabs_rdi[2] = { 0x48, 0xBF };
+		unsigned char movabs_rcx[2] = { 0x48, 0xB9 };
 		void *user_data_pointer = nullptr;
 		unsigned char movabs_rax[2] = { 0x48, 0xB8 };
 		void *function_pointer = nullptr;

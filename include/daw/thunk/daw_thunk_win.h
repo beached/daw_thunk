@@ -19,9 +19,8 @@
 #include <stdexcept>
 #include <string_view>
 #include <type_traits>
-#define WIN32_LEAN_AND_MEAN      // Exclude rarely-used stuff from Windows headers
+#define WIN32_LEAN_AND_MEAN // Exclude rarely-used stuff from Windows headers
 #include <windows.h>
-
 
 namespace daw {
 	[[noreturn]] DAW_ATTRIB_INLINE void do_error( std::string_view /*sv*/ ) {
@@ -33,8 +32,8 @@ namespace daw {
 		inline constexpr thunk<PassedParams> default_thunk{ };
 
 		template<std::size_t Len>
-		struct mmap_deleter {
-			mmap_deleter( ) = default;
+		struct virtual_alloc_deleter {
+			virtual_alloc_deleter( ) = default;
 
 			inline void operator( )( void *ptr ) const {
 				if( ::VirtualFree( ptr, 0, MEM_RELEASE ) == 0 ) {
@@ -68,7 +67,8 @@ namespace daw {
 		  thunk_impl::calculate_size_v<Result, Params...>;
 		using thunk_t = thunk_impl::thunk<param_count>;
 		using uptr_thunk_t =
-		  std::unique_ptr<thunk_t, thunk_impl::mmap_deleter<sizeof( thunk_t )>>;
+		  std::unique_ptr<thunk_t,
+		                  thunk_impl::virtual_alloc_deleter<sizeof( thunk_t )>>;
 		uptr_thunk_t thunk = nullptr;
 
 		Thunk( ) = default;

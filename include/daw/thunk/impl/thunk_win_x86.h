@@ -8,8 +8,8 @@
 
 #pragma once
 
-#if not defined( _WIN64 )
-#error This header only works on Windows with x64 architectures
+#if not defined( _WIN32 ) and not defined( _WIN64 )
+#error This header only works on Windows with x86 architectures
 #endif
 
 #include <cstddef>
@@ -19,23 +19,23 @@ namespace daw::thunk_impl {
 	struct thunk;
 
 	/***
-	 *  push [user data pointer]
-	 *  movabs eax, [function pointer]
-	 *  call eax
-	 *  add esp, 4
+	 *  sub rsp, 0x28
+	 *  movabs rcx, [user data pointer]
+	 *  movabs rax, [function pointer]
+	 *  call rax
+	 *  add rsp, 0x28
 	 *  ret
 	 */
 	template<>
 	struct thunk<0> {
 #pragma pack( push, 1 )
-		unsigned char sub_rsp_0x28[4] = { 0x48, 0x83, 0xEC, 0x28 };
-		unsigned char movabs_rcx[2] = { 0x48, 0xB9 };
+		unsigned char push = 0x68;
 		void *user_data_pointer = nullptr;
-		unsigned char movabs_rax[2] = { 0x48, 0xB8 };
+		unsigned char movabs_eax = 0xB8;
 		void *function_pointer = nullptr;
-		unsigned char call_rax[2] = { 0xFF, 0xD0 };
-		unsigned char add_rsp_0x28[4] = { 0x48, 0x83, 0xC4, 0x28 };
-		unsigned char ret = 0xC2;
+		unsigned char call_eax[2] = { 0xFF, 0xD0 };
+		unsigned char add_esp_0x4[3] = { 0x83, 0xC4, 0x04 };
+		unsigned char ret = 0xC3;
 #pragma pack( pop )
 	};
 
