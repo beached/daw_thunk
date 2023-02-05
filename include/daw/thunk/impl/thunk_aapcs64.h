@@ -13,40 +13,40 @@
 #include <cstddef>
 #include <type_traits>
 
-#if DAW_THUNK_ARCH != DAW_THUNK_ARCH_C_win_x86
-#error This header only works on sys-v x86 architectures
+#if DAW_THUNK_ARCH != DAW_THUNK_ARCH_C_aapcs64
+#error This header only works on aapcs64 arm64 architectures
 #endif
+
+#error Not implemented
 
 namespace daw::thunk_impl {
 	template<std::size_t /*PassedParams*/>
 	struct thunk;
 
-	/***
-	 *  sub rsp, 0x28
-	 *  movabs rcx, [user data pointer]
-	 *  movabs rax, [function pointer]
-	 *  call rax
-	 *  add rsp, 0x28
-	 *  ret
-	 */
+	/*
+		mov	x0, #0xa4a4                	// #42148
+			mov	x1, #0x3232                	// #12850
+			movk	x1, #0x1212, lsl #16
+			movk	x0, #0xb3b3, lsl #16
+			movk	x1, #0xf0f, lsl #32
+			movk	x0, #0xc2c2, lsl #32
+			movk	x1, #0xf0f0, lsl #48
+			movk	x0, #0xd1d1, lsl #48
+			mov	x16, x1
+				br	x16
+				x1 is data pointer, x0 is function pointer
+				*/
 	template<>
-	struct thunk<0> {
-#pragma pack( push, 1 )
-		unsigned char push = 0x68;
-		void *user_data_pointer = nullptr;
-		unsigned char movabs_eax = 0xB8;
+	struct __attribute__( ( packed ) ) thunk<0> {
 		void *function_pointer = nullptr;
-		unsigned char call_eax[2] = { 0xFF, 0xD0 };
-		unsigned char add_esp_0x4[3] = { 0x83, 0xC4, 0x04 };
-		unsigned char ret = 0xC3;
-#pragma pack( pop )
+		void *user_data_pointer = nullptr;
 	};
 
 	template<typename Thunk>
 	constexpr void set_thunk_params( Thunk &th, void *user_data_pointer,
 	                                 void *function_pointer ) {
-		th->user_data_pointer = user_data_pointer;
 		th->function_pointer = function_pointer;
+		th->user_data_pointer = user_data_pointer;
 	}
 
 	template<typename Param>

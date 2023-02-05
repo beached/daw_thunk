@@ -7,12 +7,15 @@
 //
 
 #pragma once
-#if not defined( __i386__ )
-#error This header only works on sys-v x86 architectures
-#endif
+
+#include "thunk_arch.h"
 
 #include <cstddef>
-#include <cstdint>
+#include <type_traits>
+
+#if DAW_THUNK_ARCH != DAW_THUNK_ARCH_C_sysv_x86
+#error This header only works on sys-v x86 architectures
+#endif
 
 namespace daw::thunk_imp {
 	template<std::size_t /*PassedParams*/>
@@ -21,10 +24,10 @@ namespace daw::thunk_imp {
 	/***
 	 * sub    esp,0x18
 	 * mov    eax, [function pointer]
- 	 * push   [data pointer]
-   * call   eax
-   * add    esp,0x1c
-   * ret
+	 * push   [data pointer]
+	 * call   eax
+	 * add    esp,0x1c
+	 * ret
 	 */
 	template<>
 	struct __attribute__( ( packed ) ) thunk<0> {
@@ -44,4 +47,16 @@ namespace daw::thunk_imp {
 		th->function_pointer = function_pointer;
 		th->user_data_pointer = user_data_pointer;
 	}
+
+	template<typename Param>
+	inline constexpr std::size_t calc_param_size_v =
+	  std::is_floating_point_v<Param> ? 0
+	  : sizeof( Param ) <= 8          ? 1
+	  : sizeof( Param ) <= 16         ? 2
+	                                  : 0;
+
+	template<typename, typename... Ts>
+	inline constexpr std::size_t calculate_size_v =
+	  ( calc_param_size_v<Ts> + ... + 0 );
+
 } // namespace daw::thunk_imp

@@ -8,16 +8,16 @@
 
 #pragma once
 
-#if defined( _WIN64 ) and not defined( __MINGW64__ )
-#include "thunk_win_x64.h"
-#elif defined( _WIN32 ) and not defined( __MINGW32__ )
-#include "thunk_win_x86.h"
-#elif defined( __GNUC__ )
-#if defined( __x86_64__ )
+#include "thunk_arch.h"
+
+#if DAW_THUNK_ARCH == DAW_THUNK_ARCH_C_sysv_x64
 #include "thunk_sysv_x64.h"
-#elif not defined( __i386__ )
+#elif DAW_THUNK_ARCH == DAW_THUNK_ARCH_C_sysv_x86
 #include "thunk_sysv_x86.h"
-#else
-#error Architecture unsupported
-#endif
+#elif DAW_THUNK_ARCH == DAW_THUNK_ARCH_C_win_x64
+#include "thunk_win_x64.h"
+#elif DAW_THUNK_ARCH == DAW_THUNK_ARCH_C_win_x86
+#include "thunk_win_x86.h"
+#elif DAW_THUNK_ARCH == DAW_THUNK_ARCH_C_aapcs64
+#include "thunk_aapcs64.h"
 #endif
