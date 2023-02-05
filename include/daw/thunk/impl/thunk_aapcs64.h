@@ -24,18 +24,18 @@ namespace daw::thunk_impl {
 	struct thunk;
 
 	/*
-		mov	x0, #0xa4a4                	// #42148
-			mov	x1, #0x3232                	// #12850
-			movk	x1, #0x1212, lsl #16
-			movk	x0, #0xb3b3, lsl #16
-			movk	x1, #0xf0f, lsl #32
-			movk	x0, #0xc2c2, lsl #32
-			movk	x1, #0xf0f0, lsl #48
-			movk	x0, #0xd1d1, lsl #48
-			mov	x16, x1
-				br	x16
-				x1 is data pointer, x0 is function pointer
-				*/
+	 * mov x0, #0xa4a4
+	 * mov x1, #0x3232
+	 * movk x1, #0x1212, lsl #16
+	 * movk x0, #0xb3b3, lsl #16
+	 * movk x1, #0xf0f, lsl #32
+	 * movk x0, #0xc2c2, lsl #32
+	 * movk x1, #0xf0f0, lsl #48
+	 * movk x0, #0xd1d1, lsl #48
+	 * mov x16, x1
+	 * br x16
+	 * x1 is data pointer, x0 is function pointer
+	 */
 	template<>
 	struct __attribute__( ( packed ) ) thunk<0> {
 		void *function_pointer = nullptr;
