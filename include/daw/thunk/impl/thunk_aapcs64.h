@@ -57,7 +57,7 @@ namespace daw::thunk_impl {
 	 * 5545 -> 0101'0101'0100'0101: f2ea'a8a1 -> 1111'0010'1110'1010'1010'1000'1010'0001
 	 *
 	 */
-	using arm64_op = std::uint32_t;// unsigned char[4];
+	using arm64_op = std::uint32_t;
 	// clang-format on
 	template<>
 	struct alignas( 16 ) thunk<0> {
