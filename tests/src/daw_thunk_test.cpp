@@ -31,11 +31,12 @@ int main( ) {
 	auto const lambda = [&]( ) {
 		++x;
 	};
-//	auto const th = daw::make_thunk( lambda );
+	auto fp = daw::make_erased_callable( lambda );
+	auto const th = daw::Thunk( fp );
 	std::cout << x << '\n';
-	//th( );
+	th( );
 	std::cout << x << '\n';
-	//th( );
+	th( );
 	std::cout << x << '\n';
 #endif
 }
