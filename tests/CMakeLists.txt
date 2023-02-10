@@ -6,22 +6,22 @@
 # Official repository: https://github.com/beached/daw_thunk
 #
 
-option( DAW_USE_SANITIZERS "Enable Sanitizers" OFF )
+option( DAW_USE_SANITIZERS "Enable Sanitizers" ON )
 
 if( MSVC )
     #add_compile_options( -DDEBUG /permissive- /EHsc /fsanitize=address /arch:AVX2 -DWINVER=0x0A00 -D_WIN32_WINNT=0x0A00)
-    add_compile_options( -DDEBUG /permissive- /EHsc /arch:AVX2 -DWINVER=0x0A00 -D_WIN32_WINNT=0x0A00)
-    #if( DAW_USE_SANITIZERS )
-    #add_link_options( /fsanitize=address -fno-omit-frame-pointer )
-    #endif()
+    add_compile_options( -DDEBUG /permissive- /EHsc /arch:AVX2 -DWINVER=0x0A00 -D_WIN32_WINNT=0x0A00 )
+    if( DAW_USE_SANITIZERS )
+        add_link_options( /fsanitize=address -fno-omit-frame-pointer )
+    endif()
 else()
     add_compile_options( -march=native )
     if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 16 )
         add_compile_options( -Wno-c++2b-extensions )
     endif()
     if( DAW_USE_SANITIZERS )
-    add_compile_options( -fsanitize=address )#,undefined )
-    add_link_options( -fsanitize=address ) #,undefined )
+        add_compile_options( -fsanitize=address,undefined )
+        add_link_options( -fsanitize=address,undefined )
     endif()
 endif()
 
