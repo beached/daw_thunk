@@ -78,6 +78,7 @@ namespace daw {
 			static_assert( sizeof( Result( * )( void *, Params... ) ) ==
 			                 sizeof( void * ),
 			               "Unexpected function pointer size" );
+			// Assuming that mmap results are sufficiently aligned
 			void *tmp = ::mmap( 0, sizeof( thunk_t ), PROT_WRITE,
 			                    MAP_PRIVATE | MAP_ANONYMOUS, -1, 0 );
 			if( tmp == MAP_FAILED ) {

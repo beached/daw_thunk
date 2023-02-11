@@ -88,6 +88,14 @@ namespace daw::thunk_impl {
 		}
 	}
 
+	template<std::uint32_t reg>
+	constexpr void set_imm_mov( std::uint64_t value, arm64_op *op_codes ) {
+		set_imm_mov<reg, 0>( value, op_codes[0] );
+		set_imm_mov<reg, 16>( value, op_codes[1] );
+		set_imm_mov<reg, 32>( value, op_codes[2] );
+		set_imm_mov<reg, 48>( value, op_codes[3] );
+	}
+
 	template<std::uint32_t reg_d, std::uint32_t reg_s>
 	constexpr std::uint32_t mov_reg( ) {
 		static_assert( reg_d < 16 );
@@ -100,7 +108,7 @@ namespace daw::thunk_impl {
 
 	template<std::size_t ParamCount>
 	struct alignas( 16 ) thunk {
-		static_assert( ParamCount <= 7 );
+		static_assert( ParamCount <= 8 );
 		std::uint32_t op_codes[ParamCount + 9];
 
 		template<std::size_t N>
@@ -119,17 +127,13 @@ namespace daw::thunk_impl {
 		  : thunk( std::make_index_sequence<ParamCount>{ } ) {}
 
 		constexpr void set_data_pointer( std::uintptr_t addr ) {
-			set_imm_mov<0, 0>( addr, op_codes[ParamCount + 4] );
-			set_imm_mov<0, 16>( addr, op_codes[ParamCount + 5] );
-			set_imm_mov<0, 32>( addr, op_codes[ParamCount + 6] );
-			set_imm_mov<0, 48>( addr, op_codes[ParamCount + 7] );
+			set_imm_mov<0>( addr, op_codes +
+			                        static_cast<std::ptrdiff_t>( ParamCount ) + 4 );
 		}
 
 		constexpr void set_function_pointer( std::uintptr_t addr ) {
-			set_imm_mov<16, 0>( addr, op_codes[ParamCount] );
-			set_imm_mov<16, 16>( addr, op_codes[ParamCount + 1] );
-			set_imm_mov<16, 32>( addr, op_codes[ParamCount + 2] );
-			set_imm_mov<16, 48>( addr, op_codes[ParamCount + 3] );
+			set_imm_mov<16>( addr,
+			                 op_codes + static_cast<std::ptrdiff_t>( ParamCount ) );
 		}
 	};
 
