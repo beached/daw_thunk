@@ -20,9 +20,46 @@
 #endif
 
 namespace daw::thunk_impl {
+	using arm64_op = std::uint32_t;
+	template<std::uint32_t reg, unsigned char off>
+	static constexpr void set_imm_mov( std::uint64_t value, arm64_op &op_codes ) {
+		static_assert( reg < 16 );
+		if constexpr( off == 0 ) {
+			// 0123'4567'8901'2345'6789'0123'4567'8901
+			// XXfX XXXX Xff0 0001 1112 2223 333X XXXX
+			// 1101'0010'100
+			auto const fp0 = static_cast<std::uint32_t>( value & 0xFFFFUL );
+			std::uint32_t result = { 0xD280'0000U };
+			result |= fp0 << 5U;
+			result |= reg;
+			op_codes = result;
+		} else if constexpr( off == 16 ) {
+			auto const fp16 =
+			  static_cast<std::uint32_t>( ( value >> 16 ) & 0xFFFFUL );
+			std::uint32_t result = { 0xF2A0'0000U };
+			result |= fp16 << 5U;
+			result |= reg;
+			op_codes = result;
+		} else if constexpr( off == 32 ) {
+			auto const fp32 =
+			  static_cast<std::uint32_t>( ( value >> 32 ) & 0xFFFFUL );
+			std::uint32_t result = { 0xF2C0'0000U };
+			result |= fp32 << 5U;
+			result |= reg;
+			op_codes = result;
+		} else {
+			static_assert( off == 48 );
+			auto const fp48 =
+			  static_cast<std::uint32_t>( ( value >> 48 ) & 0xFFFFUL );
+			std::uint32_t result = { 0xF2E0'0000U };
+			result |= fp48 << 5U;
+			result |= reg;
+			op_codes = result;
+		}
+	}
+
 	template<std::size_t /*PassedParams*/>
 	struct thunk;
-
 	// clang-format off
 	/*
 	 * mov x0, #0xa4a4
@@ -57,7 +94,6 @@ namespace daw::thunk_impl {
 	 * 5545 -> 0101'0101'0100'0101: f2ea'a8a1 -> 1111'0010'1110'1010'1010'1000'1010'0001
 	 *
 	 */
-	using arm64_op = std::uint32_t;
 	// clang-format on
 	template<>
 	struct alignas( 16 ) thunk<0> {
@@ -72,62 +108,28 @@ namespace daw::thunk_impl {
 		arm64_op mov_x16_x1 = { 0xAA010'3F0U };
 		arm64_op br_x16 = { 0xD61F'0200 };
 
-		template<std::uint32_t reg, unsigned char off>
-		void set_imm_mov( void *pointer, arm64_op &op_codes ) {
-			static_assert( reg < 16 );
-			auto const fp_full = reinterpret_cast<std::uintptr_t>( pointer );
-			auto op = [&] {
-				if constexpr( off == 0 ) {
-					// 0123'4567'8901'2345'6789'0123'4567'8901
-					// XXfX XXXX Xff0 0001 1112 2223 333X XXXX
-					// 1101'0010'100
-					auto const fp0 = static_cast<std::uint32_t>( fp_full & 0xFFFFUL );
-					std::uint32_t result = { 0xD280'0000U };
-					result |= fp0 << 5U;
-					return result;
-				} else if constexpr( off == 16 ) {
-					auto const fp16 =
-					  static_cast<std::uint32_t>( ( fp_full >> 16 ) & 0xFFFFUL );
-					std::uint32_t result = { 0xF2A0'0000U };
-					result |= fp16 << 5U;
-					return result;
-				} else if constexpr( off == 32 ) {
-					auto const fp32 =
-					  static_cast<std::uint32_t>( ( fp_full >> 32 ) & 0xFFFFUL );
-					std::uint32_t result = { 0xF2C0'0000U };
-					result |= fp32 << 5U;
-					return result;
-				} else {
-					static_assert( off == 48 );
-					auto const fp48 =
-					  static_cast<std::uint32_t>( ( fp_full >> 48 ) & 0xFFFFUL );
-					std::uint32_t result = { 0xF2E0'0000U };
-					result |= fp48 << 5U;
-					return result;
-				}
-			}( );
-			op |= reg;
-			op_codes = op;
+		constexpr void set_data_pointer( std::uintptr_t addr ) {
+			set_imm_mov<0, 0>( addr, mov_x1_dp_lsl0 );
+			set_imm_mov<0, 16>( addr, mov_x1_dp_lsl16 );
+			set_imm_mov<0, 32>( addr, mov_x1_dp_lsl32 );
+			set_imm_mov<0, 48>( addr, mov_x1_dp_lsl48 );
 		}
-		void set_data_pointer( void *data_pointer ) {
-			set_imm_mov<0, 0>( data_pointer, mov_x1_dp_lsl0 );
-			set_imm_mov<0, 16>( data_pointer, mov_x1_dp_lsl16 );
-			set_imm_mov<0, 32>( data_pointer, mov_x1_dp_lsl32 );
-			set_imm_mov<0, 48>( data_pointer, mov_x1_dp_lsl48 );
-		}
-		void set_function_pointer( void *data_pointer ) {
-			set_imm_mov<1, 0>( data_pointer, mov_x0_fp_lsl0 );
-			set_imm_mov<1, 16>( data_pointer, mov_x0_fp_lsl16 );
-			set_imm_mov<1, 32>( data_pointer, mov_x0_fp_lsl32 );
-			set_imm_mov<1, 48>( data_pointer, mov_x0_fp_lsl48 );
+
+		constexpr void set_function_pointer( std::uintptr_t addr ) {
+			set_imm_mov<1, 0>( addr, mov_x0_fp_lsl0 );
+			set_imm_mov<1, 16>( addr, mov_x0_fp_lsl16 );
+			set_imm_mov<1, 32>( addr, mov_x0_fp_lsl32 );
+			set_imm_mov<1, 48>( addr, mov_x0_fp_lsl48 );
 		}
 	};
 
 	template<typename Thunk>
 	constexpr void set_thunk_params( Thunk &th, void *user_data_pointer,
 	                                 void *function_pointer ) {
-		th->set_function_pointer( function_pointer );
-		th->set_data_pointer( user_data_pointer );
+		th->set_function_pointer(
+		  reinterpret_cast<std::uintptr_t>( function_pointer ) );
+		th->set_data_pointer(
+		  reinterpret_cast<std::uintptr_t>( user_data_pointer ) );
 	}
 
 	template<typename Param>
