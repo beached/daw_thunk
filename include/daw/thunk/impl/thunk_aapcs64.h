@@ -146,28 +146,27 @@ namespace daw::thunk_impl {
 	template<>
 	struct alignas( 16 ) thunk<0> {
 		arm64_op mov_x0_fp_lsl0 = { };
-		arm64_op mov_x1_dp_lsl0 = { };
-		arm64_op mov_x1_dp_lsl16 = { };
+		arm64_op mov_x16_dp_lsl0 = { };
+		arm64_op mov_x16_dp_lsl16 = { };
 		arm64_op mov_x0_fp_lsl16 = { };
-		arm64_op mov_x1_dp_lsl32 = { };
+		arm64_op mov_x16_dp_lsl32 = { };
 		arm64_op mov_x0_fp_lsl32 = { };
-		arm64_op mov_x1_dp_lsl48 = { };
+		arm64_op mov_x16_dp_lsl48 = { };
 		arm64_op mov_x0_fp_lsl48 = { };
-		arm64_op mov_x16_x1 = { 0xAA010'3F0U };
 		arm64_op br_x16 = { 0xD61F'0200 };
 
 		constexpr void set_data_pointer( std::uintptr_t addr ) {
-			set_imm_mov<0, 0>( addr, mov_x1_dp_lsl0 );
-			set_imm_mov<0, 16>( addr, mov_x1_dp_lsl16 );
-			set_imm_mov<0, 32>( addr, mov_x1_dp_lsl32 );
-			set_imm_mov<0, 48>( addr, mov_x1_dp_lsl48 );
+			set_imm_mov<0, 0>( addr, mov_x16_dp_lsl0 );
+			set_imm_mov<0, 16>( addr, mov_x16_dp_lsl16 );
+			set_imm_mov<0, 32>( addr, mov_x16_dp_lsl32 );
+			set_imm_mov<0, 48>( addr, mov_x16_dp_lsl48 );
 		}
 
 		constexpr void set_function_pointer( std::uintptr_t addr ) {
-			set_imm_mov<1, 0>( addr, mov_x0_fp_lsl0 );
-			set_imm_mov<1, 16>( addr, mov_x0_fp_lsl16 );
-			set_imm_mov<1, 32>( addr, mov_x0_fp_lsl32 );
-			set_imm_mov<1, 48>( addr, mov_x0_fp_lsl48 );
+			set_imm_mov<16, 0>( addr, mov_x0_fp_lsl0 );
+			set_imm_mov<16, 16>( addr, mov_x0_fp_lsl16 );
+			set_imm_mov<16, 32>( addr, mov_x0_fp_lsl32 );
+			set_imm_mov<16, 48>( addr, mov_x0_fp_lsl48 );
 		}
 	};
 
