@@ -55,6 +55,16 @@ namespace daw::thunk_impl {
 		}
 	}
 
+	template<std::uint32_t reg_d, std::uint32_t reg_s>
+	constexpr void mov_reg( arm64_op & op_codes ) {
+		static_assert( reg_d < 16 );
+		static_assert( reg_s < 16 );
+		std::uint32_t result = 0b1101010000'00000'000000'11111'00000U;
+		result |= (reg_s & 0b11111U) << 16U;
+		result |= (reg_d & 0b11111U);
+		op_codes = result;
+	}
+
 	template<std::size_t /*PassedParams*/>
 	struct thunk;
 	// clang-format off
