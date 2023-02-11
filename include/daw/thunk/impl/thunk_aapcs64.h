@@ -23,7 +23,7 @@ namespace daw::thunk_impl {
 	using arm64_op = std::uint32_t;
 	template<std::uint32_t reg, unsigned char off>
 	static constexpr void set_imm_mov( std::uint64_t value, arm64_op &op_codes ) {
-		static_assert( reg < 16 );
+		static_assert( reg < 17 );
 		if constexpr( off == 0 ) {
 			// 0123'4567'8901'2345'6789'0123'4567'8901
 			// XXfX XXXX Xff0 0001 1112 2223 333X XXXX
@@ -56,17 +56,58 @@ namespace daw::thunk_impl {
 	}
 
 	template<std::uint32_t reg_d, std::uint32_t reg_s>
-	constexpr void mov_reg( arm64_op & op_codes ) {
+	constexpr std::uint32_t mov_reg( ) {
 		static_assert( reg_d < 16 );
 		static_assert( reg_s < 16 );
-		std::uint32_t result = 0b1101010000'00000'000000'11111'00000U;
-		result |= (reg_s & 0b11111U) << 16U;
-		result |= (reg_d & 0b11111U);
-		op_codes = result;
+		std::uint32_t result = 0b10101010000'00000'000000'11111'00000U;
+		result |= ( reg_s & 0b11111U ) << 16U;
+		result |= ( reg_d & 0b11111U );
+		return result;
 	}
 
-	template<std::size_t /*PassedParams*/>
-	struct thunk;
+	template<std::size_t ParamCount>
+	struct alignas( 16 ) thunk {
+		static_assert( ParamCount <= 7 );
+		std::uint32_t op_codes[ParamCount];
+		arm64_op mov_x0_fp_lsl0 = { };
+		arm64_op mov_x1_dp_lsl0 = { };
+		arm64_op mov_x1_dp_lsl16 = { };
+		arm64_op mov_x0_fp_lsl16 = { };
+		arm64_op mov_x1_dp_lsl32 = { };
+		arm64_op mov_x0_fp_lsl32 = { };
+		arm64_op mov_x1_dp_lsl48 = { };
+		arm64_op mov_x0_fp_lsl48 = { };
+		//		arm64_op mov_x16_x1 = { 0xAA010'3F0U };
+		arm64_op br_x16 = { 0xD61F'0200 };
+
+		template<std::size_t N>
+		static constexpr std::uint32_t op_mov( ) noexcept {
+			constexpr auto dst = ( ParamCount - N );
+			constexpr auto src = dst - 1;
+			return mov_reg<dst, src>( );
+		}
+
+		template<std::size_t... Is>
+		constexpr thunk( std::index_sequence<Is...> ) noexcept
+		  : op_codes{ op_mov<Is>( )... } {}
+
+		constexpr thunk( ) noexcept
+		  : thunk( std::make_index_sequence<ParamCount>{ } ) {}
+
+		constexpr void set_data_pointer( std::uintptr_t addr ) {
+			set_imm_mov<0, 0>( addr, mov_x1_dp_lsl0 );
+			set_imm_mov<0, 16>( addr, mov_x1_dp_lsl16 );
+			set_imm_mov<0, 32>( addr, mov_x1_dp_lsl32 );
+			set_imm_mov<0, 48>( addr, mov_x1_dp_lsl48 );
+		}
+
+		constexpr void set_function_pointer( std::uintptr_t addr ) {
+			set_imm_mov<16, 0>( addr, mov_x0_fp_lsl0 );
+			set_imm_mov<16, 16>( addr, mov_x0_fp_lsl16 );
+			set_imm_mov<16, 32>( addr, mov_x0_fp_lsl32 );
+			set_imm_mov<16, 48>( addr, mov_x0_fp_lsl48 );
+		}
+	};
 	// clang-format off
 	/*
 	 * mov x0, #0xa4a4
