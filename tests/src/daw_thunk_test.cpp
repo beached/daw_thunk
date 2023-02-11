@@ -26,7 +26,7 @@ int main( ) {
 	std::cout << x << '\n';
 	th( 1, 2, 3, 4, 5, 10, 20 );
 	std::cout << x << '\n';
-	th( 1, 2, 3, 4, 5, 10, 20 );
+	th( 10, 20, 30, 40, 50, 100, 200 );
 	std::cout << x << '\n';
 #else
 	auto const lambda = [&]( ) {
