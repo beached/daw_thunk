@@ -28,29 +28,26 @@ namespace daw::thunk_impl {
 			// 0123'4567'8901'2345'6789'0123'4567'8901
 			// XXfX XXXX Xff0 0001 1112 2223 333X XXXX
 			// 1101'0010'100
-			auto const fp0 = static_cast<std::uint32_t>( value & 0xFFFFUL );
+			auto const fp0 = static_cast<std::uint32_t>( value & 0xFFFFU );
 			std::uint32_t result = { 0xD280'0000U };
 			result |= fp0 << 5U;
 			result |= reg;
 			op_codes = result;
 		} else if constexpr( off == 16 ) {
-			auto const fp16 =
-			  static_cast<std::uint32_t>( ( value >> 16 ) & 0xFFFFUL );
+			auto const fp16 = static_cast<std::uint32_t>( ( value >> 16 ) & 0xFFFFU );
 			std::uint32_t result = { 0xF2A0'0000U };
 			result |= fp16 << 5U;
 			result |= reg;
 			op_codes = result;
 		} else if constexpr( off == 32 ) {
-			auto const fp32 =
-			  static_cast<std::uint32_t>( ( value >> 32 ) & 0xFFFFUL );
+			auto const fp32 = static_cast<std::uint32_t>( ( value >> 32 ) & 0xFFFFU );
 			std::uint32_t result = { 0xF2C0'0000U };
 			result |= fp32 << 5U;
 			result |= reg;
 			op_codes = result;
 		} else {
 			static_assert( off == 48 );
-			auto const fp48 =
-			  static_cast<std::uint32_t>( ( value >> 48 ) & 0xFFFFUL );
+			auto const fp48 = static_cast<std::uint32_t>( ( value >> 48 ) & 0xFFFFU );
 			std::uint32_t result = { 0xF2E0'0000U };
 			result |= fp48 << 5U;
 			result |= reg;
