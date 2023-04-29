@@ -19,7 +19,7 @@ set(CMAKE_CXX_STANDARD 17 CACHE STRING "The C++ standard whose features are requ
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-find_package( daw-utf-range REQUIRED )
+find_package( daw-header-libraries REQUIRED )
 
 enable_testing()
 

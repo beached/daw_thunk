@@ -10,6 +10,7 @@
 
 #include "thunk/impl/daw_function_traits.h"
 
+#include <daw/daw_attributes.h>
 #include <daw/daw_traits.h>
 
 #include <cassert>
@@ -31,7 +32,8 @@ namespace daw {
 		function_t fp = nullptr;
 
 		template<typename Func>
-		static Result invoke_callable( void *data, Params... args ) {
+		DAW_ATTRIB_INLINE static Result invoke_callable( void *data,
+		                                                 Params... args ) {
 			assert( data );
 			auto &callable =
 			  *reinterpret_cast<std::remove_reference_t<Func> *>( data );
@@ -70,7 +72,6 @@ namespace daw {
 	template<typename Func>
 	constexpr auto make_erased_callable( Func &f ) {
 		return erased_callable_impl::make_erased_callable_t<
-		  daw::func::function_traits<Func>>{ f };
+		  daw::func::function_traits<std::remove_reference_t<Func>>>{ f };
 	}
-
 } // namespace daw

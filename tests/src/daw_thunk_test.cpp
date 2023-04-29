@@ -9,35 +9,66 @@
 #include "daw/daw_erased_callable.h"
 #include "daw/daw_thunk.h"
 
+#include <daw/daw_utility.h>
+
+#include <algorithm>
+#include <array>
+#include <cstdlib>
 #include <iostream>
 
 int main( ) {
-	using T = unsigned long long;
-	T x = 0;
+	{
+		using T = unsigned long long;
+		T x = 0;
 #if defined( __aarch64__ ) or \
   ( not defined( _WIN32 ) and defined( __x86_64__ ) )
-	auto const lambda = [&x]( T num1, T num2, T num3, T num4, T num5, T num6,
-	                          T num7 ) -> void {
-		x += num1 + num2 + num3 + num4 + num5 + num6 + num7;
-	};
-	auto ec = daw::make_erased_callable( lambda );
-	auto const th = daw::Thunk( ec );
-	assert( th.thunk );
-	std::cout << x << '\n';
-	th( 1, 2, 3, 4, 5, 10, 20 );
-	std::cout << x << '\n';
-	th( 10, 20, 30, 40, 50, 100, 200 );
-	std::cout << x << '\n';
+		auto const lambda = [&x]( T num1, T num2, T num3, T num4, T num5, T num6,
+		                          T num7 ) -> void {
+			x += num1 + num2 + num3 + num4 + num5 + num6 + num7;
+		};
+		auto ec = daw::make_erased_callable( lambda );
+		auto const th = daw::Thunk( ec );
+		assert( th.thunk );
+		std::cout << x << '\n';
+		th( 1, 2, 3, 4, 5, 10, 20 );
+		std::cout << x << '\n';
+		th( 10, 20, 30, 40, 50, 100, 200 );
+		std::cout << x << '\n';
 #else
-	auto const lambda = [&]( ) {
-		++x;
-	};
-	auto fp = daw::make_erased_callable( lambda );
-	auto const th = daw::Thunk( fp );
-	std::cout << x << '\n';
-	th( );
-	std::cout << x << '\n';
-	th( );
-	std::cout << x << '\n';
+		auto const lambda = [&]( ) {
+			++x;
+		};
+		auto fp = daw::make_erased_callable( lambda );
+		auto const th = daw::Thunk( fp );
+		std::cout << x << '\n';
+		th( );
+		std::cout << x << '\n';
+		th( );
+		std::cout << x << '\n';
 #endif
+	}
+	{
+		auto ary = std::array{ 5, 32, 6, 10, 43, 3 };
+		int sum = 0;
+		auto cmp = [&]( void const *l, void const *r ) {
+			auto const &lhs = *(int const *)l;
+			auto const &rhs = *(int const *)r;
+			if( lhs < rhs ) {
+				--sum;
+				return -1;
+			}
+			if( rhs < lhs ) {
+				++sum;
+				return 1;
+			}
+			return 0;
+		};
+		auto th = daw::make_thunk( cmp );
+		std::qsort( ary.data( ), ary.size( ), sizeof( int ), th );
+		if( not std::is_sorted( std::data( ary ), daw::data_end( ary ) ) ) {
+			std::cerr << "Expected sorted array\n";
+			std::terminate( );
+		}
+		std::cout << "Sum: " << sum << '\n';
+	}
 }
