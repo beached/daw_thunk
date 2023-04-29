@@ -23,8 +23,9 @@ namespace daw {
 	struct erased_callable;
 
 	/// \brief Construct a type erased callable suitable to pass to api's with a
-	/// function pointer/void * state first param \tparam Result The result type
-	/// of the function \tparam Params The parameter types of the function
+	/// function pointer/void * state first param
+	/// @tparam Result The result type of the function
+	/// @tparam Params The parameter types of the function
 	template<typename Result, typename... Params>
 	struct erased_callable<Result( Params... )> {
 		using function_t = daw::traits::make_fp<Result( void *, Params... )>;

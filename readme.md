@@ -6,7 +6,7 @@ This C++ library employs a thunk to enable the seamless integration of local sta
 Thunks are small, intermediary functions, generated at runtime, that capture and store the local state, allowing it to be passed implicitly to the original callback function.
 By leveraging thunks, this library efficiently bridges the gap between modern C++ programming paradigms and legacy C codebases. It provides an intuitive, type-safe interface for users to work with, ensuring the smooth and reliable operation of stateful C++ functions/callables within the context of stateless C callbacks.
 
-The library works by creating and area in memory that has the opcodes that inserts a new pointer parameter as the first param and then calls the intended function.  This area is then made non-writable and executable.  This is similar to a JIT.
+The library works by creating and area in memory that has the opcodes that inserts a new pointer parameter as the first param and then calls the intended function.  This area is then made non-writable and executable.  This is similar to a JIT.  One can create a function pointer to any lambda.
 
 There are two parts to the library.
 
