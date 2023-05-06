@@ -6,7 +6,7 @@
 # Official repository: https://github.com/beached/daw_thunk
 #
 
-option( DAW_USE_SANITIZERS "Enable Sanitizers" OFF )
+option( DAW_USE_SANITIZERS "Enable Sanitizers" ON )
 
 if( MSVC )
     #add_compile_options( -DDEBUG /permissive- /EHsc /fsanitize=address /arch:AVX2 -DWINVER=0x0A00 -D_WIN32_WINNT=0x0A00)
@@ -30,7 +30,6 @@ target_link_libraries( daw_thunk_test_lib INTERFACE daw::daw-thunk )
 target_include_directories( daw_thunk_test_lib INTERFACE include/ )
 target_compile_options( daw_thunk_test_lib INTERFACE $<$<CXX_COMPILER_ID:MSVC>:/permissive-> )
 
-
 add_executable( daw_thunk src/daw_thunk_test.cpp )
 target_link_libraries( daw_thunk PRIVATE daw_thunk_test_lib )
 add_test( NAME daw_thunk_test COMMAND daw_thunk )
@@ -38,3 +37,6 @@ add_test( NAME daw_thunk_test COMMAND daw_thunk )
 add_executable( signal src/signal_test.cpp )
 target_link_libraries( signal PRIVATE daw_thunk_test_lib )
 
+add_executable( stateful_currying src/stateful_currying_test.cpp )
+target_link_libraries( stateful_currying PRIVATE daw_thunk_test_lib )
+add_test( NAME stateful_currying_test COMMAND stateful_currying )

@@ -2,17 +2,19 @@
 
 By Darrell Wright
 
-## A Cross Platform generic thunking library
+This C++ library employs a thunk to enable the seamless integration of local state with legacy C callbacks that support only stateless function pointers.
+Thunks are small, intermediary functions, generated at runtime, that capture and store the local state, allowing it to be passed implicitly to the original callback function.
+By leveraging thunks, this library efficiently bridges the gap between modern C++ programming paradigms and legacy C codebases. It provides an intuitive, type-safe interface for users to work with, ensuring the smooth and reliable operation of stateful C++ functions/callables within the context of stateless C callbacks.
 
-The library comes in 2 parts.
+The library works by creating and area in memory that has the opcodes that inserts a new pointer parameter as the first param and then calls the intended function.  This area is then made non-writable and executable.  This is similar to a JIT.  One can create a function pointer to any lambda.
 
-### Part 1
+There are two parts to the library.
 
-The first part is a facility to convert any callable to a `void *` to the object and a function pointer that takes as it's first parameter the `void *`
+### Part 1:
+The first component of the library enables the safe creation of a new object, erased_callable, which accepts a lambda or callable class as input. It then generates a pointer to the local state or class, along with a function pointer that has the same original parameters, with the addition of a new parameter for passing the state pointer. This mechanism ensures that the local state is seamlessly and securely incorporated into the callback function while maintaining compatibility with the legacy C codebase. This component can be used for the creation of the thunk later on, or to provide a callback function that also allows for user state.
 
-### Part 2
-
-The second parts takes a function pointer and a data pointer. It generates a thunking later that returns a funtion pointer without the `void *` parameter.
+### Part 2:
+The second component generates a thunk object, daw_thunk, from a function pointer and a data pointer, or the erased_callable from Part 1. It provides a function pointer that can call the thunk, which in turn will call the provided function with the user data pointer as its first parameter. This component facilitates the efficient and secure execution of the original function while allowing for the local state to be accessed and modified as needed.
 
 ### Example usage
 

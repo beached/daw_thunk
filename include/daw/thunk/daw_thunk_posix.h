@@ -31,8 +31,8 @@ namespace daw {
 		inline constexpr thunk<PassedParams> default_thunk{ };
 
 		template<std::size_t Len>
-		struct virtual_alloc_deleter {
-			virtual_alloc_deleter( ) = default;
+		struct mmap_deleter {
+			mmap_deleter( ) = default;
 
 			inline void operator( )( void *ptr ) const {
 				if( munmap( ptr, Len ) == -1 ) {
@@ -67,7 +67,7 @@ namespace daw {
 		  thunk_impl::calculate_size_v<Result, Params...>;
 		using thunk_t = thunk_impl::thunk<param_count>;
 		using uptr_thunk_t =
-		  std::unique_ptr<thunk_t, thunk_impl::virtual_alloc_deleter<sizeof( thunk_t )>>;
+		  std::unique_ptr<thunk_t, thunk_impl::mmap_deleter<sizeof( thunk_t )>>;
 		uptr_thunk_t thunk = nullptr;
 
 		Thunk( ) = default;
@@ -78,6 +78,7 @@ namespace daw {
 			static_assert( sizeof( Result( * )( void *, Params... ) ) ==
 			                 sizeof( void * ),
 			               "Unexpected function pointer size" );
+			// Assuming that mmap results are sufficiently aligned
 			void *tmp = ::mmap( 0, sizeof( thunk_t ), PROT_WRITE,
 			                    MAP_PRIVATE | MAP_ANONYMOUS, -1, 0 );
 			if( tmp == MAP_FAILED ) {

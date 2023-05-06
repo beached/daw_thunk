@@ -8,14 +8,17 @@
 
 #pragma once
 
-#if not defined( _WIN32 ) and not defined( _WIN64 )
-#error This header only works on Windows with x86 architectures
-#endif
+#include "thunk_arch.h"
 
 #include <cstddef>
+#include <type_traits>
+
+#if DAW_THUNK_ARCH != DAW_THUNK_ARCH_C_win_x86
+#error This header only works on sys-v x86 architectures
+#endif
 
 namespace daw::thunk_impl {
-	template<std::size_t /*PassedParams*/>
+	template<std::size_t /*PassedParams*/, typename = void>
 	struct thunk;
 
 	/***

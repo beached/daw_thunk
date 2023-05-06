@@ -10,6 +10,7 @@
 
 #include "thunk/impl/daw_function_traits.h"
 
+#include <daw/daw_attributes.h>
 #include <daw/daw_traits.h>
 
 #include <cassert>
@@ -22,8 +23,9 @@ namespace daw {
 	struct erased_callable;
 
 	/// \brief Construct a type erased callable suitable to pass to api's with a
-	/// function pointer/void * state first param \tparam Result The result type
-	/// of the function \tparam Params The parameter types of the function
+	/// function pointer/void * state first param
+	/// @tparam Result The result type of the function
+	/// @tparam Params The parameter types of the function
 	template<typename Result, typename... Params>
 	struct erased_callable<Result( Params... )> {
 		using function_t = daw::traits::make_fp<Result( void *, Params... )>;
@@ -31,7 +33,8 @@ namespace daw {
 		function_t fp = nullptr;
 
 		template<typename Func>
-		static Result invoke_callable( void *data, Params... args ) {
+		DAW_ATTRIB_INLINE static Result invoke_callable( void *data,
+		                                                 Params... args ) {
 			assert( data );
 			auto &callable =
 			  *reinterpret_cast<std::remove_reference_t<Func> *>( data );
@@ -70,7 +73,6 @@ namespace daw {
 	template<typename Func>
 	constexpr auto make_erased_callable( Func &f ) {
 		return erased_callable_impl::make_erased_callable_t<
-		  daw::func::function_traits<Func>>{ f };
+		  daw::func::function_traits<std::remove_reference_t<Func>>>{ f };
 	}
-
 } // namespace daw

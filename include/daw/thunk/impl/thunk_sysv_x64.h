@@ -8,14 +8,17 @@
 
 #pragma once
 
-#if not defined( __x86_64__ )
+#include "thunk_arch.h"
+
+#include <cstddef>
+#include <type_traits>
+
+#if DAW_THUNK_ARCH != DAW_THUNK_ARCH_C_sysv_x64
 #error This header only works on sys-v x64 architectures
 #endif
 
-#include <cstddef>
-
 namespace daw::thunk_impl {
-	template<std::size_t /*PassedParams*/>
+	template<std::size_t /*PassedParams*/, typename = void>
 	struct thunk;
 
 	/***
@@ -25,7 +28,7 @@ namespace daw::thunk_impl {
 	 */
 	template<>
 	struct __attribute__( ( packed ) ) thunk<0> {
-		unsigned char movabs_rcx[2] = { 0x48, 0xB9 };
+		unsigned char movabs_rdi[2] = { 0x48, 0xBF };
 		void *user_data_pointer = nullptr;
 		unsigned char movabs_rax[2] = { 0x48, 0xB8 };
 		void *function_pointer = nullptr;

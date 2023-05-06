@@ -67,6 +67,6 @@ int main( ) {
 		th( 2, 1 );
 		std::cout << x << '\n';
 	}
-	std::cout << "\n\nDone" << std::flush;
+	std::cout << "\n\n" << std::flush;
 }
 
