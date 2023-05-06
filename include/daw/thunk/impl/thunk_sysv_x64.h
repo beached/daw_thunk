@@ -18,7 +18,7 @@
 #endif
 
 namespace daw::thunk_impl {
-	template<std::size_t /*PassedParams*/>
+	template<std::size_t /*PassedParams*/, typename = void>
 	struct thunk;
 
 	/***

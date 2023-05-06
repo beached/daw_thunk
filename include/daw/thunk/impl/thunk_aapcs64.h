@@ -106,9 +106,9 @@ namespace daw::thunk_impl {
 		return result;
 	}
 
-	template<std::size_t ParamCount>
+	template<std::size_t ParamCount, typename = void>
 	struct alignas( 16 ) thunk {
-		static_assert( ParamCount <= 8 );
+		static_assert( ParamCount <= 8, "Only 8 or less parameters are supported" );
 		std::uint32_t op_codes[ParamCount + 9];
 
 		template<std::size_t N>
