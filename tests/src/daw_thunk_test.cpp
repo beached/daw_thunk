@@ -17,7 +17,7 @@ int main( ) {
 	/*
 	auto const lambda = [&x]( T num1, T num2, T num3, T num4, T num5, T num6,
 	                          T num7, T num8, T num9 ) -> void {
-		x += num1 + num2 + num3 + num4 + num5 + num6 + num7 + num8 + num9;
+	  x += num1 + num2 + num3 + num4 + num5 + num6 + num7 + num8 + num9;
 	};
 	auto ec = daw::make_erased_callable( lambda );
 	auto const th = daw::Thunk( ec );
@@ -28,13 +28,45 @@ int main( ) {
 	th( 1, 2, 3, 4, 5, 10, 20, 30, 50 );
 	std::cout << x << '\n';
 	 */
-	auto const lambda = [&]( ) {
-		++x;
-	};
-	auto const th = daw::make_thunk( lambda );
-	std::cout << x << '\n';
-	th( );
-	std::cout << x << '\n';
-	th( );
-	std::cout << x << '\n';
+	{
+		std::cout << "\n0 params\n********\n";
+		auto const lambda = [&]( ) {
+			++x;
+		};
+		auto const th = daw::make_thunk( lambda );
+		std::cout << x << '\n';
+		th( );
+		std::cout << x << '\n';
+		th( );
+		std::cout << x << '\n';
+	}
+	{
+		std::cout << "\n1 param\n*******\n";
+		x = 0;
+		auto const lambda = [&]( int y0 ) {
+			x += y0;
+		};
+		auto const th = daw::make_thunk( lambda );
+		std::cout << x << '\n';
+		th( 2 );
+		std::cout << x << '\n';
+		th( 2 );
+		std::cout << x << '\n';
+	}
+
+	{
+		std::cout << "\n2 param\n*******\n";
+		x = 0;
+		auto const lambda = [&]( int y0, int y1 ) {
+			x += y0 + y1;
+		};
+		auto const th = daw::make_thunk( lambda );
+		std::cout << x << '\n';
+		th( 2, 1 );
+		std::cout << x << '\n';
+		th( 2, 1 );
+		std::cout << x << '\n';
+	}
+	std::cout << "\n\nDone" << std::flush;
 }
+
