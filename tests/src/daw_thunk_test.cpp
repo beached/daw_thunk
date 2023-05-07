@@ -11,6 +11,14 @@
 
 #include <iostream>
 
+#define ensure_equal( Lhs, Rhs )                                              \
+	do {                                                                        \
+		if( Lhs != Rhs ) {                                                        \
+			std::cerr << "Expected equal: " << ( Lhs ) << " = " << ( Rhs ) << '\n'; \
+			std::terminate( );                                                      \
+		}                                                                         \
+	} while( false )
+
 int main( ) {
 	using T = long long;
 	T x = 0;
@@ -26,6 +34,7 @@ int main( ) {
 		std::cout << x << '\n';
 		th( );
 		std::cout << x << '\n';
+		ensure_equal( x, 2 );
 	}
 	{
 		std::cout << "\n1 param\n*******\n";
@@ -39,6 +48,7 @@ int main( ) {
 		std::cout << x << '\n';
 		th( 2 );
 		std::cout << x << '\n';
+		ensure_equal( x, 4 );
 	}
 
 	{
@@ -53,6 +63,7 @@ int main( ) {
 		std::cout << x << '\n';
 		th( 2, 1 );
 		std::cout << x << '\n';
+		ensure_equal( x, 6 );
 	}
 	{
 		std::cout << "\n3 param\n*******\n";
@@ -66,6 +77,7 @@ int main( ) {
 		std::cout << x << '\n';
 		th( 2, 1, 1 );
 		std::cout << x << '\n';
+		ensure_equal( x, 8 );
 	}
 	{
 		std::cout << "\n4 param\n*******\n";
@@ -79,6 +91,7 @@ int main( ) {
 		std::cout << x << '\n';
 		th( 2, 1, 1, 1 );
 		std::cout << x << '\n';
+		ensure_equal( x, 10 );
 	}
 	{
 		std::cout << "\n5 param\n*******\n";
@@ -92,6 +105,7 @@ int main( ) {
 		std::cout << x << '\n';
 		th( 2, 1, 1, 1, 1 );
 		std::cout << x << '\n';
+		ensure_equal( x, 12 );
 	}
 	{
 		std::cout << "\n6 param\n*******\n";
@@ -105,6 +119,7 @@ int main( ) {
 		std::cout << x << '\n';
 		th( 2, 1, 1, 1, 1, 1 );
 		std::cout << x << '\n';
+		ensure_equal( x, 14 );
 	}
 	{
 		std::cout << "\n7 param\n*******\n";
@@ -118,6 +133,7 @@ int main( ) {
 		std::cout << x << '\n';
 		th( 2, 1, 1, 1, 1, 1, 1 );
 		std::cout << x << '\n';
+		ensure_equal( x, 16 );
 	}
 	{
 		std::cout << "\n8 param\n*******\n";
@@ -131,6 +147,7 @@ int main( ) {
 		std::cout << x << '\n';
 		th( 2, 1, 1, 1, 1, 1, 1, 1 );
 		std::cout << x << '\n';
+		ensure_equal( x, 18 );
 	}
 	{
 		std::cout << "\n9 param\n*******\n";
@@ -145,6 +162,7 @@ int main( ) {
 		std::cout << x << '\n';
 		th( 2, 1, 1, 1, 1, 1, 1, 1, 1 );
 		std::cout << x << '\n';
+		ensure_equal( x, 20 );
 	}
 	std::cout << "\n\n" << std::flush;
 }

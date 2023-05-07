@@ -28,7 +28,7 @@ namespace daw {
 	}
 	namespace thunk_impl {
 		template<std::size_t PassedParams>
-		inline constexpr thunk<PassedParams> default_thunk{ };
+		static inline constexpr thunk<PassedParams> default_thunk{ };
 
 		template<std::size_t Len>
 		struct mmap_deleter {
