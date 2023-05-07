@@ -12,22 +12,9 @@
 #include <iostream>
 
 int main( ) {
-	using T = unsigned long long;
+	using T = long long;
 	T x = 0;
-	/*
-	auto const lambda = [&x]( T num1, T num2, T num3, T num4, T num5, T num6,
-	                          T num7, T num8, T num9 ) -> void {
-	  x += num1 + num2 + num3 + num4 + num5 + num6 + num7 + num8 + num9;
-	};
-	auto ec = daw::make_erased_callable( lambda );
-	auto const th = daw::Thunk( ec );
-	assert( th.thunk );
-	std::cout << x << '\n';
-	th( 1, 2, 3, 4, 5, 10, 20, 30, 50 );
-	std::cout << x << '\n';
-	th( 1, 2, 3, 4, 5, 10, 20, 30, 50 );
-	std::cout << x << '\n';
-	 */
+
 	{
 		std::cout << "\n0 params\n********\n";
 		auto const lambda = [&]( ) {
@@ -67,6 +54,97 @@ int main( ) {
 		th( 2, 1 );
 		std::cout << x << '\n';
 	}
+	{
+		std::cout << "\n3 param\n*******\n";
+		x = 0;
+		auto const lambda = [&]( int y0, int y1, int y2 ) {
+			x += y0 + y1 + y2;
+		};
+		auto const th = daw::make_thunk( lambda );
+		std::cout << x << '\n';
+		th( 2, 1, 1 );
+		std::cout << x << '\n';
+		th( 2, 1, 1 );
+		std::cout << x << '\n';
+	}
+	{
+		std::cout << "\n4 param\n*******\n";
+		x = 0;
+		auto const lambda = [&]( int y0, int y1, int y2, int y3 ) {
+			x += y0 + y1 + y2 + y3;
+		};
+		auto const th = daw::make_thunk( lambda );
+		std::cout << x << '\n';
+		th( 2, 1, 1, 1 );
+		std::cout << x << '\n';
+		th( 2, 1, 1, 1 );
+		std::cout << x << '\n';
+	}
+	{
+		std::cout << "\n5 param\n*******\n";
+		x = 0;
+		auto const lambda = [&]( int y0, int y1, int y2, int y3, int y4 ) {
+			x += y0 + y1 + y2 + y3 + y4;
+		};
+		auto const th = daw::make_thunk( lambda );
+		std::cout << x << '\n';
+		th( 2, 1, 1, 1, 1 );
+		std::cout << x << '\n';
+		th( 2, 1, 1, 1, 1 );
+		std::cout << x << '\n';
+	}
+	{
+		std::cout << "\n6 param\n*******\n";
+		x = 0;
+		auto const lambda = [&]( T y0, T y1, T y2, T y3, T y4, T y5 ) {
+			x += y0 + y1 + y2 + y3 + y4 + y5;
+		};
+		auto const th = daw::make_thunk( lambda );
+		std::cout << x << '\n';
+		th( 2, 1, 1, 1, 1, 1 );
+		std::cout << x << '\n';
+		th( 2, 1, 1, 1, 1, 1 );
+		std::cout << x << '\n';
+	}
+	{
+		std::cout << "\n7 param\n*******\n";
+		x = 0;
+		auto const lambda = [&]( T y0, T y1, T y2, T y3, T y4, T y5, T y6 ) {
+			x += y0 + y1 + y2 + y3 + y4 + y5 + y6;
+		};
+		auto const th = daw::make_thunk( lambda );
+		std::cout << x << '\n';
+		th( 2, 1, 1, 1, 1, 1, 1 );
+		std::cout << x << '\n';
+		th( 2, 1, 1, 1, 1, 1, 1 );
+		std::cout << x << '\n';
+	}
+	{
+		std::cout << "\n8 param\n*******\n";
+		x = 0;
+		auto const lambda = [&]( T y0, T y1, T y2, T y3, T y4, T y5, T y6, T y7 ) {
+			x += y0 + y1 + y2 + y3 + y4 + y5 + y6 + y7;
+		};
+		auto const th = daw::make_thunk( lambda );
+		std::cout << x << '\n';
+		th( 2, 1, 1, 1, 1, 1, 1, 1 );
+		std::cout << x << '\n';
+		th( 2, 1, 1, 1, 1, 1, 1, 1 );
+		std::cout << x << '\n';
+	}
+	{
+		std::cout << "\n9 param\n*******\n";
+		x = 0;
+		auto const lambda = [&]( T y0, T y1, T y2, T y3, T y4, T y5, T y6, T y7,
+		                         T y8 ) {
+			x += y0 + y1 + y2 + y3 + y4 + y5 + y6 + y7 + y8;
+		};
+		auto const th = daw::make_thunk( lambda );
+		std::cout << x << '\n';
+		th( 2, 1, 1, 1, 1, 1, 1, 1, 1 );
+		std::cout << x << '\n';
+		th( 2, 1, 1, 1, 1, 1, 1, 1, 1 );
+		std::cout << x << '\n';
+	}
 	std::cout << "\n\n" << std::flush;
 }
-
