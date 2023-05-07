@@ -97,7 +97,7 @@ namespace daw::thunk_impl {
 		 */
 		template<>
 		struct __attribute__( ( packed ) ) thunk<4> {
-			unsigned char mov_r8_rcx[3] = { 0x48, 0x89, 0xC8 };
+			unsigned char mov_r8_rcx[3] = { 0x49, 0x89, 0xC8 };
 			unsigned char mov_rcx_rdx[3] = { 0x48, 0x89, 0xD1 };
 			unsigned char mov_rdx_rsi[3] = { 0x48, 0x89, 0xF2 };
 			unsigned char mov_rsi_rdi[3] = { 0x48, 0x89, 0xFE };
