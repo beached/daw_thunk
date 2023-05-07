@@ -113,13 +113,13 @@ namespace daw::thunk_impl {
 
 		template<std::size_t ParamCount, typename = void>
 		struct alignas( 16 ) thunk {
-			static_assert( ParamCount <= 8,
+			static_assert( ParamCount < 8,
 			               "Only 8 or less parameters are supported" );
 			std::uint32_t op_codes[ParamCount + 9];
 
 			template<std::size_t N>
 			static constexpr std::uint32_t op_mov( ) noexcept {
-				constexpr auto dst = ( ParamCount - N );
+			constexpr auto dst = ( ParamCount - N );
 				constexpr auto src = dst - 1;
 				return mov_reg<dst, src>( );
 			}

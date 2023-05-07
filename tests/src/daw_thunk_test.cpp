@@ -135,6 +135,7 @@ int main( ) {
 		std::cout << x << '\n';
 		ensure_equal( x, 16 );
 	}
+#if not defined( DAW_THUNK_ARCH_aapcs64 )
 	{
 		std::cout << "\n8 param\n*******\n";
 		x = 0;
@@ -164,5 +165,6 @@ int main( ) {
 		std::cout << x << '\n';
 		ensure_equal( x, 20 );
 	}
+#endif
 	std::cout << "\n\n" << std::flush;
 }
